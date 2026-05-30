@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Pixel Wall</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -50,7 +51,6 @@
     font-weight: 700;
   }
 
-  /* BANDEAU DÉFILANT */
   .ticker-wrap {
     width: 100%;
     background: #111;
@@ -64,7 +64,7 @@
   .ticker {
     display: flex;
     white-space: nowrap;
-    animation: ticker-scroll 20s linear infinite;
+    animation: ticker-scroll 30s linear infinite;
   }
   .ticker-item {
     padding: 0 32px;
@@ -80,7 +80,6 @@
     100% { transform: translateX(-50%); }
   }
 
-  /* STATS */
   .stats-bar {
     display: flex;
     justify-content: center;
@@ -102,7 +101,6 @@
     letter-spacing: 1px;
   }
 
-  /* WALL SECTION */
   .wall-section {
     display: flex;
     justify-content: center;
@@ -112,7 +110,6 @@
     background: #0a0a0a;
   }
 
-  /* CITATION */
   .citation-block {
     width: 200px;
     flex-shrink: 0;
@@ -135,10 +132,7 @@
     letter-spacing: 1px;
   }
 
-  .wall-wrapper {
-    overflow: auto;
-    flex-shrink: 0;
-  }
+  .wall-wrapper { overflow: auto; flex-shrink: 0; }
 
   #pixel-wall {
     display: grid;
@@ -169,7 +163,6 @@
     display: block;
   }
 
-  /* MODAL */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -192,16 +185,8 @@
     max-height: 90vh;
     overflow-y: auto;
   }
-  .modal h2 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .modal .pixel-info {
-    font-size: 0.8rem;
-    color: #555;
-    margin-bottom: 24px;
-  }
+  .modal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+  .modal .pixel-info { font-size: 0.8rem; color: #555; margin-bottom: 24px; }
   .modal label {
     display: block;
     font-size: 0.8rem;
@@ -224,11 +209,7 @@
   }
   .modal input[type="text"]:focus { border-color: #f0c040; }
 
-  .tabs {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-  }
+  .tabs { display: flex; gap: 8px; margin-top: 16px; }
   .tab-btn {
     flex: 1;
     padding: 8px;
@@ -249,12 +230,7 @@
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
-  .color-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-  }
+  .color-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
   .color-swatch {
     width: 28px;
     height: 28px;
@@ -267,20 +243,10 @@
     border-color: #fff;
     transform: scale(1.15);
   }
-  .color-picker-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 8px;
-  }
+  .color-picker-wrap { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
   .color-picker-wrap input[type="color"] {
-    width: 40px;
-    height: 40px;
-    padding: 2px;
-    cursor: pointer;
-    border-radius: 8px;
-    border: none;
-    background: none;
+    width: 40px; height: 40px; padding: 2px;
+    cursor: pointer; border-radius: 8px; border: none; background: none;
   }
 
   .upload-zone {
@@ -296,12 +262,7 @@
   .upload-zone p { color: #666; font-size: 0.85rem; margin-top: 8px; }
   .upload-zone .icon { font-size: 2rem; }
   .upload-preview { margin-top: 12px; display: none; text-align: center; }
-  .upload-preview img {
-    max-width: 80px;
-    max-height: 80px;
-    border-radius: 6px;
-    border: 1px solid #333;
-  }
+  .upload-preview img { max-width: 80px; max-height: 80px; border-radius: 6px; border: 1px solid #333; }
   .upload-preview p { font-size: 0.75rem; color: #888; margin-top: 4px; }
   input[type="file"] { display: none; }
 
@@ -319,68 +280,36 @@
     transition: background 0.2s, transform 0.1s;
   }
   .btn-primary:hover { background: #ffd050; transform: translateY(-1px); }
+  .btn-primary:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
+
   .btn-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: #1e1e1e;
-    border: none;
-    color: #888;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; top: 16px; right: 16px;
+    background: #1e1e1e; border: none; color: #888;
+    width: 32px; height: 32px; border-radius: 50%;
+    cursor: pointer; font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
   }
   .btn-close:hover { color: #fff; }
 
   .toast {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
+    position: fixed; bottom: 32px; left: 50%;
     transform: translateX(-50%) translateY(80px);
-    background: #f0c040;
-    color: #000;
-    font-weight: 700;
-    padding: 12px 28px;
-    border-radius: 999px;
-    font-size: 0.95rem;
-    z-index: 2000;
-    transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275);
+    background: #f0c040; color: #000; font-weight: 700;
+    padding: 12px 28px; border-radius: 999px; font-size: 0.95rem;
+    z-index: 2000; transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275);
     pointer-events: none;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .footer-note {
-    text-align: center;
-    padding: 32px 20px;
-    color: #444;
-    font-size: 0.8rem;
-  }
+  .footer-note { text-align: center; padding: 32px 20px; color: #444; font-size: 0.8rem; }
 
-  @media (max-width: 1100px) {
-    .citation-block { display: none; }
-    .wall-section { padding: 24px 0; }
-  }
+  @media (max-width: 1100px) { .citation-block { display: none; } .wall-section { padding: 24px 0; } }
   @media (max-width: 860px) {
-    #pixel-wall {
-      grid-template-columns: repeat(100, 6px);
-      grid-template-rows: repeat(100, 6px);
-      width: 600px;
-      height: 600px;
-    }
+    #pixel-wall { grid-template-columns: repeat(100, 6px); grid-template-rows: repeat(100, 6px); width: 600px; height: 600px; }
     .pixel { width: 6px; height: 6px; }
   }
   @media (max-width: 640px) {
-    #pixel-wall {
-      grid-template-columns: repeat(100, 4px);
-      grid-template-rows: repeat(100, 4px);
-      width: 400px;
-      height: 400px;
-    }
+    #pixel-wall { grid-template-columns: repeat(100, 4px); grid-template-rows: repeat(100, 4px); width: 400px; height: 400px; }
     .pixel { width: 4px; height: 4px; }
   }
 </style>
@@ -394,7 +323,6 @@
   <div class="price-tag">1 pixel = <span>1€</span> · Trace permanente sur internet</div>
 </div>
 
-<!-- BANDEAU DÉFILANT -->
 <div class="ticker-wrap" id="ticker-wrap">
   <div class="ticker" id="ticker"></div>
 </div>
@@ -470,13 +398,21 @@
   </div>
 </div>
 
-<div class="toast" id="toast">✅ Trace laissée !</div>
+<div class="toast" id="toast">✅ Ta trace est laissée pour toujours !</div>
 
 <div class="footer-note">
   Chaque pixel est unique · La trace est permanente · 1€ = 1 pixel pour toujours
 </div>
 
 <script>
+  // =============================================
+  // SUPABASE
+  // =============================================
+  const SUPABASE_URL = 'https://ujiajiudpxtlsaojibiu.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_lVQLAeWUHJmpyBEIbSBYFg_8_rKQrVU';
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
   const GRID_COLS = 100;
   const GRID_ROWS = 100;
   const TOTAL_PIXELS = GRID_COLS * GRID_ROWS;
@@ -486,34 +422,79 @@
     '#fff','#888','#333','#000'
   ];
 
-  let pixelData = JSON.parse(localStorage.getItem('pixelwall_data') || '{}');
+  let pixelData = {};
   let selectedPixelIndex = null;
   let selectedColor = PRESET_COLORS[0];
   let selectedImageData = null;
   let activeTab = 'couleur';
 
+  // =============================================
   // BUILD GRID
+  // =============================================
   const wall = document.getElementById('pixel-wall');
   for (let i = 0; i < TOTAL_PIXELS; i++) {
     const px = document.createElement('div');
     px.className = 'pixel';
     px.dataset.index = i;
-    if (pixelData[i]) {
-      if (pixelData[i].image) {
-        const img = document.createElement('img');
-        img.src = pixelData[i].image;
-        px.appendChild(img);
-      } else {
-        px.style.background = pixelData[i].color || '#fff';
-      }
-      px.classList.add('sold');
-      if (pixelData[i].message) px.title = pixelData[i].message;
-    }
     px.addEventListener('click', () => onPixelClick(i, px));
     wall.appendChild(px);
   }
 
+  // =============================================
+  // CHARGER LES PIXELS DEPUIS SUPABASE
+  // =============================================
+  async function loadPixels() {
+    const { data, error } = await db.from('pixels').select('*');
+    if (error) { console.error('Erreur chargement:', error); return; }
+
+    data.forEach(pixel => {
+      pixelData[pixel.id] = pixel;
+      const px = wall.children[pixel.id];
+      if (!px) return;
+
+      if (pixel.image) {
+        const img = document.createElement('img');
+        img.src = pixel.image;
+        px.appendChild(img);
+      } else {
+        px.style.background = pixel.color || '#fff';
+      }
+      px.classList.add('sold');
+      if (pixel.message) px.title = pixel.pseudo + ' : ' + pixel.message;
+    });
+
+    updateStats();
+    updateTicker();
+  }
+
+  // =============================================
+  // TEMPS RÉEL — nouveaux pixels
+  // =============================================
+  db.channel('pixels-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pixels' }, payload => {
+      const pixel = payload.new;
+      pixelData[pixel.id] = pixel;
+      const px = wall.children[pixel.id];
+      if (!px) return;
+
+      if (pixel.image) {
+        const img = document.createElement('img');
+        img.src = pixel.image;
+        px.appendChild(img);
+      } else {
+        px.style.background = pixel.color || '#fff';
+      }
+      px.classList.add('sold');
+      if (pixel.message) px.title = pixel.pseudo + ' : ' + pixel.message;
+
+      updateStats();
+      updateTicker();
+    })
+    .subscribe();
+
+  // =============================================
   // COLOR SWATCHES
+  // =============================================
   const swatchContainer = document.getElementById('color-swatches');
   PRESET_COLORS.forEach(c => {
     const s = document.createElement('div');
@@ -534,7 +515,9 @@
     document.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('active'));
   });
 
+  // =============================================
   // TABS
+  // =============================================
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       activeTab = btn.dataset.tab;
@@ -545,7 +528,9 @@
     });
   });
 
+  // =============================================
   // IMAGE UPLOAD
+  // =============================================
   const uploadZone = document.getElementById('upload-zone');
   const fileInput = document.getElementById('file-input');
   const uploadPreview = document.getElementById('upload-preview');
@@ -555,10 +540,7 @@
   fileInput.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Image trop lourde. Maximum 2Mo.');
-      return;
-    }
+    if (file.size > 2 * 1024 * 1024) { alert('Image trop lourde. Maximum 2Mo.'); return; }
     const reader = new FileReader();
     reader.onload = ev => {
       selectedImageData = ev.target.result;
@@ -568,28 +550,30 @@
     reader.readAsDataURL(file);
   });
 
+  // =============================================
   // PIXEL CLICK
+  // =============================================
   function onPixelClick(index, el) {
-    if (pixelData[index] && pixelData[index].url) {
-      window.open(pixelData[index].url, '_blank');
+    if (pixelData[index]) {
+      if (pixelData[index].url) window.open(pixelData[index].url, '_blank');
       return;
     }
-    if (pixelData[index]) return;
     const col = (index % GRID_COLS) + 1;
     const row = Math.floor(index / GRID_COLS) + 1;
     selectedPixelIndex = index;
     selectedImageData = null;
     uploadPreview.style.display = 'none';
     fileInput.value = '';
-    document.getElementById('modal-pixel-info').textContent =
-      `Pixel #${index + 1} · Ligne ${row}, Colonne ${col}`;
+    document.getElementById('modal-pixel-info').textContent = `Pixel #${index + 1} · Ligne ${row}, Colonne ${col}`;
     document.getElementById('pixel-pseudo').value = '';
     document.getElementById('pixel-message').value = '';
     document.getElementById('pixel-url').value = '';
     document.getElementById('modal-overlay').classList.add('open');
   }
 
+  // =============================================
   // MODAL CLOSE
+  // =============================================
   document.getElementById('btn-close').addEventListener('click', closeModal);
   document.getElementById('modal-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('modal-overlay')) closeModal();
@@ -599,39 +583,52 @@
     selectedPixelIndex = null;
   }
 
-  // ACHAT
-  document.getElementById('btn-acheter').addEventListener('click', () => {
+  // =============================================
+  // ACHAT → SUPABASE
+  // =============================================
+  document.getElementById('btn-acheter').addEventListener('click', async () => {
     if (selectedPixelIndex === null) return;
     const pseudo = document.getElementById('pixel-pseudo').value.trim();
-    if (!pseudo) {
-      alert('Merci de saisir un pseudo pour laisser ta trace !');
-      return;
-    }
+    if (!pseudo) { alert('Merci de saisir un pseudo !'); return; }
+
     const message = document.getElementById('pixel-message').value.trim();
     const url = document.getElementById('pixel-url').value.trim();
-    const px = wall.children[selectedPixelIndex];
+    const btn = document.getElementById('btn-acheter');
 
-    if (activeTab === 'image' && selectedImageData) {
-      pixelData[selectedPixelIndex] = { image: selectedImageData, pseudo, message, url, ts: Date.now() };
-      px.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = selectedImageData;
-      px.appendChild(img);
-    } else {
-      pixelData[selectedPixelIndex] = { color: selectedColor, pseudo, message, url, ts: Date.now() };
-      px.style.background = selectedColor;
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement...';
+
+    const payload = {
+      id: selectedPixelIndex,
+      pseudo,
+      message: message || null,
+      url: url || null,
+      color: activeTab === 'image' ? null : selectedColor,
+      image: activeTab === 'image' && selectedImageData ? selectedImageData : null
+    };
+
+    const { error } = await db.from('pixels').insert(payload);
+
+    btn.disabled = false;
+    btn.textContent = 'Acheter ce pixel pour 1€ →';
+
+    if (error) {
+      if (error.code === '23505') {
+        alert('Ce pixel vient d\'être pris ! Choisis-en un autre.');
+      } else {
+        alert('Erreur : ' + error.message);
+      }
+      closeModal();
+      return;
     }
 
-    px.classList.add('sold');
-    if (message) px.title = pseudo + ' : ' + message;
-    localStorage.setItem('pixelwall_data', JSON.stringify(pixelData));
-    updateStats();
-    updateTicker();
     closeModal();
     showToast('✅ Ta trace est laissée pour toujours !');
   });
 
+  // =============================================
   // STATS
+  // =============================================
   function updateStats() {
     const sold = Object.keys(pixelData).length;
     const percent = ((sold / TOTAL_PIXELS) * 100).toFixed(3);
@@ -648,36 +645,37 @@
     document.getElementById('stat-percent').textContent = percent + '%';
   }
 
+  // =============================================
   // TICKER
+  // =============================================
   function updateTicker() {
-    const pseudos = Object.values(pixelData)
-      .filter(p => p.pseudo)
-      .map(p => p.pseudo);
-
+    const pseudos = Object.values(pixelData).filter(p => p.pseudo).map(p => p.pseudo);
     if (pseudos.length === 0) {
       document.getElementById('ticker-wrap').classList.remove('visible');
       return;
     }
-
     document.getElementById('ticker-wrap').classList.add('visible');
     const ticker = document.getElementById('ticker');
-    // Dupliquer pour boucle infinie
     const allItems = [...pseudos, ...pseudos];
     ticker.innerHTML = allItems.map(p =>
       `<span class="ticker-item">✦ <span>${p}</span> a laissé sa trace</span>`
     ).join('');
   }
 
-  updateStats();
-  updateTicker();
-
+  // =============================================
   // TOAST
+  // =============================================
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+
+  // =============================================
+  // INIT
+  // =============================================
+  loadPixels();
 </script>
 </body>
 </html>
