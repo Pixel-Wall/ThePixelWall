@@ -7,211 +7,65 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; }
 
-  body {
-    background: #0a0a0a;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-  }
-
-  .hero {
-    text-align: center;
-    padding: 48px 20px 32px;
-  }
-  .hero h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
-    letter-spacing: -1px;
-    color: #f0c040;
-    margin-bottom: 20px;
-  }
-  .hero .tagline {
-    font-size: 1.1rem;
-    color: #aaa;
-    line-height: 1.8;
-    margin-bottom: 6px;
-  }
+  .hero { text-align: center; padding: 48px 20px 32px; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -1px; color: #f0c040; margin-bottom: 20px; }
+  .hero .tagline { font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 6px; }
   .hero .tagline strong { color: #fff; font-weight: 600; }
-  .hero .price-tag {
-    display: inline-block;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 999px;
-    padding: 8px 24px;
-    font-size: 0.95rem;
-    color: #fff;
-    margin-top: 20px;
-  }
+  .hero .price-tag { display: inline-block; background: #1a1a1a; border: 1px solid #333; border-radius: 999px; padding: 8px 24px; font-size: 0.95rem; color: #fff; margin-top: 20px; }
   .hero .price-tag span { color: #f0c040; font-weight: 700; }
 
-  .citation-mobile {
-    display: none;
-    text-align: center;
-    padding: 20px 24px;
-    background: #0f0f0f;
-    border-top: 1px solid #1e1e1e;
-  }
-  .citation-mobile p {
-    color: #888;
-    font-size: 0.9rem;
-    font-style: italic;
-    line-height: 1.6;
-    border-left: 3px solid #f0c040;
-    padding-left: 14px;
-    text-align: left;
-  }
-  .citation-mobile span {
-    display: block;
-    color: #f0c040;
-    font-size: 0.75rem;
-    margin-top: 8px;
-    font-style: normal;
-    letter-spacing: 1px;
-  }
+  .citation-mobile { display: none; text-align: center; padding: 20px 24px; background: #0f0f0f; border-top: 1px solid #1e1e1e; }
+  .citation-mobile p { color: #888; font-size: 0.9rem; font-style: italic; line-height: 1.6; border-left: 3px solid #f0c040; padding-left: 14px; text-align: left; }
+  .citation-mobile span { display: block; color: #f0c040; font-size: 0.75rem; margin-top: 8px; font-style: normal; letter-spacing: 1px; }
 
-  .ticker-wrap {
-    width: 100%;
-    background: #111;
-    border-top: 1px solid #1e1e1e;
-    border-bottom: 1px solid #1e1e1e;
-    padding: 10px 0;
-    overflow: hidden;
-    display: none;
-  }
+  .ticker-wrap { width: 100%; background: #111; border-top: 1px solid #1e1e1e; border-bottom: 1px solid #1e1e1e; padding: 10px 0; overflow: hidden; display: none; }
   .ticker-wrap.visible { display: block; }
   .ticker { display: flex; white-space: nowrap; animation: ticker-scroll 30s linear infinite; }
   .ticker-item { padding: 0 32px; font-size: 0.85rem; color: #888; }
   .ticker-item span { color: #f0c040; font-weight: 600; }
-  @keyframes ticker-scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+  @keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-    padding: 16px 20px;
-    background: #0f0f0f;
-    flex-wrap: wrap;
-  }
+  .stats-bar { display: flex; justify-content: center; gap: 48px; padding: 16px 20px; background: #0f0f0f; flex-wrap: wrap; }
   .stat { text-align: center; }
   .stat .value { font-size: 1.4rem; font-weight: 700; color: #f0c040; }
   .stat .label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
-  .wall-section {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 32px;
-    padding: 32px 20px;
-    background: #0a0a0a;
-  }
-
+  .wall-section { display: flex; justify-content: center; align-items: flex-start; gap: 32px; padding: 32px 20px; background: #0a0a0a; }
   .citation-block { width: 200px; flex-shrink: 0; padding-top: 16px; }
-  .citation-block blockquote {
-    border-left: 3px solid #f0c040;
-    padding-left: 16px;
-    color: #888;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    font-style: italic;
-  }
-  .citation-block blockquote strong {
-    display: block;
-    margin-top: 12px;
-    color: #f0c040;
-    font-style: normal;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-  }
-
+  .citation-block blockquote { border-left: 3px solid #f0c040; padding-left: 16px; color: #888; font-size: 0.95rem; line-height: 1.7; font-style: italic; }
+  .citation-block blockquote strong { display: block; margin-top: 12px; color: #f0c040; font-style: normal; font-size: 0.8rem; letter-spacing: 1px; }
   .wall-wrapper { overflow: auto; flex-shrink: 0; }
 
-  #pixel-wall {
-    display: grid;
-    grid-template-columns: repeat(100, 8px);
-    grid-template-rows: repeat(100, 8px);
-    cursor: crosshair;
-    border: 1px solid #ccc;
-    width: 800px;
-    height: 800px;
-  }
-
-  .pixel {
-    width: 8px; height: 8px;
-    background: #ffffff;
-    position: relative;
-    overflow: hidden;
-  }
+  #pixel-wall { display: grid; grid-template-columns: repeat(100, 8px); grid-template-rows: repeat(100, 8px); cursor: crosshair; border: 1px solid #ccc; width: 800px; height: 800px; }
+  .pixel { width: 8px; height: 8px; background: #ffffff; position: relative; overflow: hidden; }
   .pixel:hover { outline: 1px solid #f0c040; z-index: 10; }
   .pixel.sold { cursor: pointer; }
   .pixel img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
-  .modal {
-    background: #141414;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 32px;
-    width: 90%;
-    max-width: 420px;
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
+  .modal { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; width: 90%; max-width: 420px; position: relative; max-height: 90vh; overflow-y: auto; }
   .modal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
   .modal .pixel-info { font-size: 0.8rem; color: #555; margin-bottom: 24px; }
-  .modal label {
-    display: block; font-size: 0.8rem; color: #888;
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 6px; margin-top: 16px;
-  }
-  .modal input[type="text"] {
-    width: 100%; background: #1e1e1e; border: 1px solid #2e2e2e;
-    border-radius: 8px; color: #fff; padding: 10px 14px;
-    font-size: 0.95rem; outline: none; transition: border-color 0.2s;
-  }
+  .modal label { display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; margin-top: 16px; }
+  .modal input[type="text"] { width: 100%; background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 8px; color: #fff; padding: 10px 14px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
   .modal input[type="text"]:focus { border-color: #f0c040; }
 
   .tabs { display: flex; gap: 8px; margin-top: 16px; }
-  .tab-btn {
-    flex: 1; padding: 8px; border-radius: 8px;
-    border: 1px solid #2e2e2e; background: #1e1e1e;
-    color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
-  }
+  .tab-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #2e2e2e; background: #1e1e1e; color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
   .tab-btn.active { background: #f0c040; color: #000; border-color: #f0c040; font-weight: 700; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
   .color-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-  .color-swatch {
-    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-    border: 2px solid transparent; transition: border-color 0.15s, transform 0.15s;
-  }
+  .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s, transform 0.15s; }
   .color-swatch:hover, .color-swatch.active { border-color: #fff; transform: scale(1.15); }
   .color-picker-wrap { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-  .color-picker-wrap input[type="color"] {
-    width: 40px; height: 40px; padding: 2px;
-    cursor: pointer; border-radius: 8px; border: none; background: none;
-  }
+  .color-picker-wrap input[type="color"] { width: 40px; height: 40px; padding: 2px; cursor: pointer; border-radius: 8px; border: none; background: none; }
 
-  .upload-zone {
-    border: 2px dashed #2e2e2e; border-radius: 10px;
-    padding: 24px; text-align: center; cursor: pointer;
-    transition: border-color 0.2s; margin-top: 8px;
-  }
+  .upload-zone { border: 2px dashed #2e2e2e; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; margin-top: 8px; }
   .upload-zone:hover { border-color: #f0c040; }
   .upload-zone p { color: #666; font-size: 0.85rem; margin-top: 8px; }
   .upload-zone .icon { font-size: 2rem; }
@@ -220,103 +74,30 @@
   .upload-preview p { font-size: 0.75rem; color: #888; margin-top: 4px; }
   input[type="file"] { display: none; }
 
-  .btn-primary {
-    width: 100%; margin-top: 24px; padding: 14px;
-    background: #f0c040; color: #000; font-weight: 700;
-    font-size: 1rem; border: none; border-radius: 10px;
-    cursor: pointer; transition: background 0.2s, transform 0.1s;
-  }
+  .btn-primary { width: 100%; margin-top: 24px; padding: 14px; background: #f0c040; color: #000; font-weight: 700; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
   .btn-primary:hover { background: #ffd050; transform: translateY(-1px); }
   .btn-primary:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
-
-  .btn-close {
-    position: absolute; top: 16px; right: 16px;
-    background: #1e1e1e; border: none; color: #888;
-    width: 32px; height: 32px; border-radius: 50%;
-    cursor: pointer; font-size: 1.1rem;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .btn-close { position: absolute; top: 16px; right: 16px; background: #1e1e1e; border: none; color: #888; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
   .btn-close:hover { color: #fff; }
 
-  .toast {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(120px);
-    background: #f0c040;
-    color: #000;
-    font-weight: 700;
-    padding: 12px 28px;
-    border-radius: 999px;
-    font-size: 0.95rem;
-    z-index: 3000;
-    transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275);
-    pointer-events: none;
-    white-space: nowrap;
-  }
+  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(120px); background: #f0c040; color: #000; font-weight: 700; padding: 12px 28px; border-radius: 999px; font-size: 0.95rem; z-index: 3000; transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275); pointer-events: none; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .footer {
-    text-align: center;
-    padding: 32px 20px;
-    color: #444;
-    font-size: 0.8rem;
-    border-top: 1px solid #1a1a1a;
-  }
-  .footer a {
-    color: #f0c040;
-    text-decoration: none;
-    cursor: pointer;
-  }
+  .footer { text-align: center; padding: 32px 20px; color: #444; font-size: 0.8rem; border-top: 1px solid #1a1a1a; }
+  .footer a { color: #f0c040; text-decoration: none; cursor: pointer; }
   .footer a:hover { text-decoration: underline; }
 
-  .modal-legal {
-    background: #141414;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 32px;
-    width: 90%;
-    max-width: 600px;
-    position: relative;
-    max-height: 85vh;
-    overflow-y: auto;
-  }
+  .modal-legal { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; width: 90%; max-width: 600px; position: relative; max-height: 85vh; overflow-y: auto; }
   .modal-legal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; color: #f0c040; }
   .modal-legal h3 { font-size: 1rem; font-weight: 700; margin-top: 24px; margin-bottom: 8px; color: #fff; }
   .modal-legal p { font-size: 0.85rem; color: #888; line-height: 1.7; margin-bottom: 8px; }
   .modal-legal ul { padding-left: 20px; }
   .modal-legal ul li { font-size: 0.85rem; color: #888; line-height: 1.7; }
 
-  @media (max-width: 1100px) {
-    .citation-block { display: none; }
-    .citation-mobile { display: block; }
-    .wall-section { padding: 24px 0; }
-  }
-  @media (max-width: 860px) {
-    #pixel-wall {
-      grid-template-columns: repeat(100, 6px);
-      grid-template-rows: repeat(100, 6px);
-      width: 600px; height: 600px;
-    }
-    .pixel { width: 6px; height: 6px; }
-  }
-  @media (max-width: 640px) {
-    #pixel-wall {
-      grid-template-columns: repeat(100, 4px);
-      grid-template-rows: repeat(100, 4px);
-      width: 400px; height: 400px;
-    }
-    .pixel { width: 4px; height: 4px; }
-    .toast { font-size: 0.85rem; padding: 10px 20px; bottom: 20px; }
-  }
-  @media (max-width: 420px) {
-    #pixel-wall {
-      grid-template-columns: repeat(100, 3.5px);
-      grid-template-rows: repeat(100, 3.5px);
-      width: 350px; height: 350px;
-    }
-    .pixel { width: 3.5px; height: 3.5px; }
-  }
+  @media (max-width: 1100px) { .citation-block { display: none; } .citation-mobile { display: block; } .wall-section { padding: 24px 0; } }
+  @media (max-width: 860px) { #pixel-wall { grid-template-columns: repeat(100, 6px); grid-template-rows: repeat(100, 6px); width: 600px; height: 600px; } .pixel { width: 6px; height: 6px; } }
+  @media (max-width: 640px) { #pixel-wall { grid-template-columns: repeat(100, 4px); grid-template-rows: repeat(100, 4px); width: 400px; height: 400px; } .pixel { width: 4px; height: 4px; } .toast { font-size: 0.85rem; padding: 10px 20px; bottom: 20px; } }
+  @media (max-width: 420px) { #pixel-wall { grid-template-columns: repeat(100, 3.5px); grid-template-rows: repeat(100, 3.5px); width: 350px; height: 350px; } .pixel { width: 3.5px; height: 3.5px; } }
 </style>
 </head>
 <body>
@@ -404,7 +185,7 @@
     <input type="text" id="pixel-url" placeholder="https://tonsite.com">
 
     <button class="btn-primary" id="btn-acheter">
-      Acheter ce pixel pour 1€ →
+      Payer 1€ et laisser ma trace →
     </button>
   </div>
 </div>
@@ -413,10 +194,8 @@
   <div class="modal-legal">
     <button class="btn-close" id="btn-close-legal">✕</button>
     <h2>📄 Mentions légales & CGV</h2>
-
     <h3>Éditeur du site</h3>
     <p>Le site The Pixel Wall est édité par <strong>Pixel Trace</strong>, micro-entreprise en cours de création, France.</p>
-
     <h3>Conditions Générales de Vente</h3>
     <p>En achetant un pixel sur The Pixel Wall, vous acceptez les présentes CGV.</p>
     <ul>
@@ -427,23 +206,19 @@
       <li>Tout contenu illégal sera supprimé sans remboursement.</li>
       <li>Le paiement est sécurisé via Stripe.</li>
     </ul>
-
     <h3>Droit de rétractation</h3>
     <p>Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne s'applique pas aux contenus numériques personnalisés.</p>
-
     <h3>Politique de confidentialité & RGPD</h3>
     <p>Les données collectées (pseudo, message, URL) sont stockées de manière sécurisée et visibles publiquement sur le mur.</p>
     <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données.</p>
-
     <h3>Hébergement</h3>
     <p>Site hébergé par GitHub Pages. Base de données hébergée par Supabase.</p>
-
     <h3>Propriété intellectuelle</h3>
     <p>Le concept, le design et le code de The Pixel Wall sont la propriété exclusive de Pixel Trace. Toute reproduction est interdite sans autorisation.</p>
   </div>
 </div>
 
-<div class="toast" id="toast">✅ Ta trace est laissée pour toujours !</div>
+<div class="toast" id="toast">⏳ Redirection vers le paiement...</div>
 
 <div class="footer">
   Chaque pixel est unique · La trace est permanente · 1€ = 1 pixel pour toujours<br><br>
@@ -453,23 +228,22 @@
 <script>
   const SUPABASE_URL = 'https://ujiajiudpxtlsaojibiu.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaWFqaXVkcHh0bHNhb2ppYml1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMjcxODMsImV4cCI6MjA5NTcwMzE4M30.vmyy-T8XzTRu-Sf-JfiuuUvYP0zJIaA-O5f-XzC6Fvc';
+  const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/eVqbJ25Cz9YN4MT3TU4Vy00';
+
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const GRID_COLS = 100;
   const GRID_ROWS = 100;
   const TOTAL_PIXELS = GRID_COLS * GRID_ROWS;
-  const PRESET_COLORS = [
-    '#f0c040','#ff4d4d','#ff8c00','#4caf50',
-    '#2196f3','#9c27b0','#e91e63','#00bcd4',
-    '#fff','#888','#333','#000'
-  ];
+  const PRESET_COLORS = ['#f0c040','#ff4d4d','#ff8c00','#4caf50','#2196f3','#9c27b0','#e91e63','#00bcd4','#fff','#888','#333','#000'];
 
   let pixelData = {};
   let selectedPixelIndex = null;
   let selectedColor = PRESET_COLORS[0];
   let selectedImageData = null;
   let activeTab = 'couleur';
+  let pendingPixel = null;
 
   const wall = document.getElementById('pixel-wall');
   for (let i = 0; i < TOTAL_PIXELS; i++) {
@@ -497,13 +271,31 @@
 
   async function loadPixels() {
     const { data, error } = await db.from('pixels').select('*');
-    if (error) { console.error('Erreur chargement:', error); return; }
-    data.forEach(pixel => {
-      pixelData[pixel.id] = pixel;
-      applyPixelToDOM(pixel);
-    });
+    if (error) { console.error('Erreur:', error); return; }
+    data.forEach(pixel => { pixelData[pixel.id] = pixel; applyPixelToDOM(pixel); });
     updateStats();
     updateTicker();
+
+    // Vérifier si retour de paiement Stripe
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success' && localStorage.getItem('pendingPixel')) {
+      const pending = JSON.parse(localStorage.getItem('pendingPixel'));
+      await savePendingPixel(pending);
+      localStorage.removeItem('pendingPixel');
+      history.replaceState({}, '', window.location.pathname);
+    }
+  }
+
+  async function savePendingPixel(pending) {
+    if (pixelData[pending.id]) return;
+    const { error } = await db.from('pixels').insert(pending);
+    if (!error) {
+      pixelData[pending.id] = pending;
+      applyPixelToDOM(pending);
+      updateStats();
+      updateTicker();
+      showToast('✅ Ta trace est gravée pour toujours !');
+    }
   }
 
   db.channel('pixels-realtime')
@@ -613,7 +405,7 @@
     const btn = document.getElementById('btn-acheter');
 
     btn.disabled = true;
-    btn.textContent = 'Enregistrement...';
+    btn.textContent = 'Redirection vers le paiement...';
 
     const payload = {
       id: selectedPixelIndex,
@@ -624,23 +416,16 @@
       image: activeTab === 'image' && selectedImageData ? selectedImageData : null
     };
 
-    const { error } = await db.from('pixels').insert(payload);
+    // Sauvegarde locale avant redirection Stripe
+    localStorage.setItem('pendingPixel', JSON.stringify(payload));
 
-    btn.disabled = false;
-    btn.textContent = 'Acheter ce pixel pour 1€ →';
+    showToast('⏳ Redirection vers le paiement...');
 
-    if (error) {
-      if (error.code === '23505') {
-        alert('Ce pixel vient d\'être pris ! Choisis-en un autre.');
-      } else {
-        alert('Erreur : ' + error.message);
-      }
-      closeModal();
-      return;
-    }
-
-    closeModal();
-    showToast('✅ Ta trace est laissée pour toujours !');
+    // Redirection vers Stripe avec URL de retour
+    const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname + '?payment=success');
+    setTimeout(() => {
+      window.location.href = STRIPE_PAYMENT_LINK + '?success_url=' + returnUrl;
+    }, 800);
   });
 
   function updateStats() {
@@ -660,16 +445,11 @@
 
   function updateTicker() {
     const pseudos = Object.values(pixelData).filter(p => p.pseudo).map(p => p.pseudo);
-    if (pseudos.length === 0) {
-      document.getElementById('ticker-wrap').classList.remove('visible');
-      return;
-    }
+    if (pseudos.length === 0) { document.getElementById('ticker-wrap').classList.remove('visible'); return; }
     document.getElementById('ticker-wrap').classList.add('visible');
     const ticker = document.getElementById('ticker');
     const allItems = [...pseudos, ...pseudos];
-    ticker.innerHTML = allItems.map(p =>
-      `<span class="ticker-item">✦ <span>${p}</span> a laissé sa trace</span>`
-    ).join('');
+    ticker.innerHTML = allItems.map(p => `<span class="ticker-item">✦ <span>${p}</span> a laissé sa trace</span>`).join('');
   }
 
   let toastTimeout = null;
