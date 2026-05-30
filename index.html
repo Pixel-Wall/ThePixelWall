@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pixel Wall</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 48px 20px 32px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 1.1rem;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .hero .price-tag {
+    display: inline-block;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 999px;
+    padding: 8px 24px;
+    font-size: 0.95rem;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+  .hero .price-tag span {
+    color: #f0c040;
+    font-weight: 700;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    padding: 16px 20px;
+    background: #111;
+    border-top: 1px solid #1e1e1e;
+    border-bottom: 1px solid #1e1e1e;
+    flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat .value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f0c040;
+  }
+  .stat .label {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* WALL WRAPPER */
+  .wall-wrapper {
+    width: 100%;
+    overflow: auto;
+    padding: 24px 0;
+    display: flex;
+    justify-content: center;
+    background: #0a0a0a;
+  }
+
+  #pixel-wall {
+    display: grid;
+    grid-template-columns: repeat(100, 8px);
+    grid-template-rows: repeat(100, 8px);
+    gap: 0px;
+    cursor: crosshair;
+    border: 1px solid #1e1e1e;
+    width: 800px;
+    height: 800px;
+    flex-shrink: 0;
+  }
+
+  .pixel {
+    width: 8px;
+    height: 8px;
+    background: #111;
+    transition: transform 0.05s;
+    position: relative;
+  }
+  .pixel:hover {
+    transform: scale(1.5);
+    z-index: 10;
+    outline: 1px solid #f0c040;
+  }
+  .pixel.sold {
+    cursor: pointer;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open {
+    display: flex;
+  }
+  .modal {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+  }
+  .modal h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .modal .pixel-info {
+    font-size: 0.8rem;
+    color: #555;
+    margin-bottom: 24px;
+  }
+  .modal label {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  .modal input, .modal select {
+    width: 100%;
+    background: #1e1e1e;
+    border: 1px solid #2e2e2e;
+    border-radius: 8px;
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal input:focus, .modal select:focus {
+    border-color: #f0c040;
+  }
+  .color-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .color-swatch:hover, .color-swatch.active {
+    border-color: #fff;
+    transform: scale(1.15);
+  }
+  .color-picker-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .color-picker-wrap input[type="color"] {
+    width: 40px;
+    height: 40px;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    background: #f0c040;
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover {
+    background: #ffd050;
+    transform: translateY(-1px);
+  }
+  .btn-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #1e1e1e;
+    border: none;
+    color: #888;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-close:hover { color: #fff; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #f0c040;
+    color: #000;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    z-index: 2000;
+    transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275);
+    pointer-events: none;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* FOOTER NOTE */
+  .footer-note {
+    text-align: center;
+    padding: 32px 20px;
+    color: #444;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 860px) {
+    #pixel-wall {
+      grid-template-columns: repeat(100, 6px);
+      grid-template-rows: repeat(100, 6px);
+      width: 600px;
+      height: 600px;
+    }
+    .pixel { width: 6px; height: 6px; }
+  }
+  @media (max-width: 640px) {
+    #pixel-wall {
+      grid-template-columns: repeat(100, 4px);
+      grid-template-rows: repeat(100, 4px);
+      width: 400px;
+      height: 400px;
+    }
+    .pixel { width: 4px; height: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>The Pixel Wall</h1>
+  <p>1 000 000 pixels. 1 seul propriétaire par pixel. Pour toujours.</p>
+  <div class="price-tag">1 pixel = <span>1€</span> · Trace permanente sur internet</div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="value" id="stat-sold">0</div>
+    <div class="label">Pixels vendus</div>
+  </div>
+  <div class="stat">
+    <div class="value" id="stat-remaining">1 000 000</div>
+    <div class="label">Pixels disponibles</div>
+  </div>
+  <div class="stat">
+    <div class="value" id="stat-revenue">0€</div>
+    <div class="label">Revenus générés</div>
+  </div>
+  <div class="stat">
+    <div class="value" id="stat-percent">0%</div>
+    <div class="label">Mur rempli</div>
+  </div>
+</div>
+
+<!-- PIXEL WALL -->
+<div class="wall-wrapper">
+  <div id="pixel-wall"></div>
+</div>
+
+<!-- MODAL ACHAT -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="btn-close" id="btn-close">✕</button>
+    <h2>🎨 Personnalise ton pixel</h2>
+    <div class="pixel-info" id="modal-pixel-info">Pixel #0 · Ligne 0, Colonne 0</div>
+
+    <label>Couleur</label>
+    <div class="color-row" id="color-swatches"></div>
+    <div class="color-picker-wrap">
+      <input type="color" id="custom-color" value="#f0c040">
+      <span style="color:#666;font-size:0.85rem">Couleur personnalisée</span>
+    </div>
+
+    <label>Ton message (optionnel)</label>
+    <input type="text" id="pixel-message" maxlength="60" placeholder="Ex: Marie était ici 🌟">
+
+    <label>Lien URL (optionnel)</label>
+    <input type="text" id="pixel-url" placeholder="https://tonsite.com">
+
+    <button class="btn-primary" id="btn-acheter">
+      Acheter ce pixel pour 1€ →
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Pixel réservé !</div>
+
+<!-- FOOTER -->
+<div class="footer-note">
+  Chaque pixel est unique · La trace est permanente · 1€ = 1 pixel pour toujours
+</div>
+
+<script>
+  // =============================================
+  // CONFIG
+  // =============================================
+  const GRID_COLS = 100;
+  const GRID_ROWS = 100;
+  const TOTAL_PIXELS = GRID_COLS * GRID_ROWS;
+
+  const PRESET_COLORS = [
+    '#f0c040','#ff4d4d','#ff8c00','#4caf50',
+    '#2196f3','#9c27b0','#e91e63','#00bcd4',
+    '#fff','#888','#333','#000'
+  ];
+
+  // =============================================
+  // STATE
+  // =============================================
+  // Charge depuis localStorage (prototype sans Supabase)
+  let pixelData = JSON.parse(localStorage.getItem('pixelwall_data') || '{}');
+  let selectedPixelIndex = null;
+  let selectedColor = PRESET_COLORS[0];
+
+  // =============================================
+  // BUILD GRID
+  // =============================================
+  const wall = document.getElementById('pixel-wall');
+
+  for (let i = 0; i < TOTAL_PIXELS; i++) {
+    const px = document.createElement('div');
+    px.className = 'pixel';
+    px.dataset.index = i;
+
+    if (pixelData[i]) {
+      px.style.background = pixelData[i].color || '#333';
+      px.classList.add('sold');
+      if (pixelData[i].url) px.dataset.url = pixelData[i].url;
+      if (pixelData[i].message) px.title = pixelData[i].message;
+    }
+
+    px.addEventListener('click', () => onPixelClick(i, px));
+    wall.appendChild(px);
+  }
+
+  // =============================================
+  // COLOR SWATCHES
+  // =============================================
+  const swatchContainer = document.getElementById('color-swatches');
+  PRESET_COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'color-swatch' + (c === selectedColor ? ' active' : '');
+    s.style.background = c;
+    s.addEventListener('click', () => {
+      selectedColor = c;
+      document.getElementById('custom-color').value = c;
+      document.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('active'));
+      s.classList.add('active');
+    });
+    swatchContainer.appendChild(s);
+  });
+
+  document.getElementById('custom-color').addEventListener('input', e => {
+    selectedColor = e.target.value;
+    document.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('active'));
+  });
+
+  // =============================================
+  // PIXEL CLICK
+  // =============================================
+  function onPixelClick(index, el) {
+    // Si déjà vendu et a un lien → ouvrir le lien
+    if (pixelData[index] && pixelData[index].url) {
+      window.open(pixelData[index].url, '_blank');
+      return;
+    }
+
+    const col = (index % GRID_COLS) + 1;
+    const row = Math.floor(index / GRID_COLS) + 1;
+
+    selectedPixelIndex = index;
+    document.getElementById('modal-pixel-info').textContent =
+      `Pixel #${index + 1} · Ligne ${row}, Colonne ${col}`;
+    document.getElementById('pixel-message').value = '';
+    document.getElementById('pixel-url').value = '';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  // =============================================
+  // MODAL CLOSE
+  // =============================================
+  document.getElementById('btn-close').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    selectedPixelIndex = null;
+  }
+
+  // =============================================
+  // ACHAT (prototype : local uniquement)
+  // =============================================
+  document.getElementById('btn-acheter').addEventListener('click', () => {
+    if (selectedPixelIndex === null) return;
+
+    const color = selectedColor;
+    const message = document.getElementById('pixel-message').value.trim();
+    const url = document.getElementById('pixel-url').value.trim();
+
+    // Sauvegarde locale (sera remplacé par Supabase en Phase 2)
+    pixelData[selectedPixelIndex] = { color, message, url, ts: Date.now() };
+    localStorage.setItem('pixelwall_data', JSON.stringify(pixelData));
+
+    // Met à jour le pixel visuellement
+    const px = wall.children[selectedPixelIndex];
+    px.style.background = color;
+    px.classList.add('sold');
+    if (message) px.title = message;
+    if (url) px.dataset.url = url;
+
+    updateStats();
+    closeModal();
+    showToast('✅ Pixel réservé ! (paiement Stripe en Phase 3)');
+  });
+
+  // =============================================
+  // STATS
+  // =============================================
+  function updateStats() {
+    const sold = Object.keys(pixelData).length;
+    const remaining = TOTAL_PIXELS - sold;
+    const revenue = sold;
+    const percent = ((sold / TOTAL_PIXELS) * 100).toFixed(3);
+
+    document.getElementById('stat-sold').textContent = sold.toLocaleString('fr-FR');
+    document.getElementById('stat-remaining').textContent = remaining.toLocaleString('fr-FR');
+    document.getElementById('stat-revenue').textContent = revenue.toLocaleString('fr-FR') + '€';
+    document.getElementById('stat-percent').textContent = percent + '%';
+  }
+
+  updateStats();
+
+  // =============================================
+  // TOAST
+  // =============================================
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+
+</body>
+</html>
