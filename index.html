@@ -71,10 +71,7 @@
     font-size: 0.85rem;
     color: #888;
   }
-  .ticker-item span {
-    color: #f0c040;
-    font-weight: 600;
-  }
+  .ticker-item span { color: #f0c040; font-weight: 600; }
   @keyframes ticker-scroll {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
@@ -89,17 +86,8 @@
     flex-wrap: wrap;
   }
   .stat { text-align: center; }
-  .stat .value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #f0c040;
-  }
-  .stat .label {
-    font-size: 0.75rem;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
+  .stat .value { font-size: 1.4rem; font-weight: 700; color: #f0c040; }
+  .stat .label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
   .wall-section {
     display: flex;
@@ -110,11 +98,7 @@
     background: #0a0a0a;
   }
 
-  .citation-block {
-    width: 200px;
-    flex-shrink: 0;
-    padding-top: 16px;
-  }
+  .citation-block { width: 200px; flex-shrink: 0; padding-top: 16px; }
   .citation-block blockquote {
     border-left: 3px solid #f0c040;
     padding-left: 16px;
@@ -151,17 +135,9 @@
     position: relative;
     overflow: hidden;
   }
-  .pixel:hover {
-    outline: 1px solid #f0c040;
-    z-index: 10;
-  }
+  .pixel:hover { outline: 1px solid #f0c040; z-index: 10; }
   .pixel.sold { cursor: pointer; }
-  .pixel img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+  .pixel img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   .modal-overlay {
     display: none;
@@ -211,38 +187,20 @@
 
   .tabs { display: flex; gap: 8px; margin-top: 16px; }
   .tab-btn {
-    flex: 1;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #2e2e2e;
-    background: #1e1e1e;
-    color: #888;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
+    flex: 1; padding: 8px; border-radius: 8px;
+    border: 1px solid #2e2e2e; background: #1e1e1e;
+    color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
   }
-  .tab-btn.active {
-    background: #f0c040;
-    color: #000;
-    border-color: #f0c040;
-    font-weight: 700;
-  }
+  .tab-btn.active { background: #f0c040; color: #000; border-color: #f0c040; font-weight: 700; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
   .color-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
   .color-swatch {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.15s, transform 0.15s;
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: border-color 0.15s, transform 0.15s;
   }
-  .color-swatch:hover, .color-swatch.active {
-    border-color: #fff;
-    transform: scale(1.15);
-  }
+  .color-swatch:hover, .color-swatch.active { border-color: #fff; transform: scale(1.15); }
   .color-picker-wrap { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
   .color-picker-wrap input[type="color"] {
     width: 40px; height: 40px; padding: 2px;
@@ -250,13 +208,9 @@
   }
 
   .upload-zone {
-    border: 2px dashed #2e2e2e;
-    border-radius: 10px;
-    padding: 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    margin-top: 8px;
+    border: 2px dashed #2e2e2e; border-radius: 10px;
+    padding: 24px; text-align: center; cursor: pointer;
+    transition: border-color 0.2s; margin-top: 8px;
   }
   .upload-zone:hover { border-color: #f0c040; }
   .upload-zone p { color: #666; font-size: 0.85rem; margin-top: 8px; }
@@ -267,17 +221,10 @@
   input[type="file"] { display: none; }
 
   .btn-primary {
-    width: 100%;
-    margin-top: 24px;
-    padding: 14px;
-    background: #f0c040;
-    color: #000;
-    font-weight: 700;
-    font-size: 1rem;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    width: 100%; margin-top: 24px; padding: 14px;
+    background: #f0c040; color: #000; font-weight: 700;
+    font-size: 1rem; border: none; border-radius: 10px;
+    cursor: pointer; transition: background 0.2s, transform 0.1s;
   }
   .btn-primary:hover { background: #ffd050; transform: translateY(-1px); }
   .btn-primary:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
@@ -405,11 +352,8 @@
 </div>
 
 <script>
-  // =============================================
-  // SUPABASE
-  // =============================================
   const SUPABASE_URL = 'https://ujiajiudpxtlsaojibiu.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_lVQLAeWUHJmpyBEIbSBYFg_8_rKQrVU';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaWFqaXVkcHh0bHNhb2ppYml1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMjcxODMsImV4cCI6MjA5NTcwMzE4M30.vmyy-T8XzTRu-Sf-JfiuuUvYP0zJIaA-O5f-XzC6Fvc';
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -428,9 +372,6 @@
   let selectedImageData = null;
   let activeTab = 'couleur';
 
-  // =============================================
-  // BUILD GRID
-  // =============================================
   const wall = document.getElementById('pixel-wall');
   for (let i = 0; i < TOTAL_PIXELS; i++) {
     const px = document.createElement('div');
@@ -440,61 +381,46 @@
     wall.appendChild(px);
   }
 
-  // =============================================
-  // CHARGER LES PIXELS DEPUIS SUPABASE
-  // =============================================
+  function applyPixelToDOM(pixel) {
+    const px = wall.children[pixel.id];
+    if (!px) return;
+    if (pixel.image) {
+      px.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = pixel.image;
+      px.appendChild(img);
+    } else {
+      px.style.background = pixel.color || '#fff';
+    }
+    px.classList.add('sold');
+    if (pixel.message) px.title = pixel.pseudo + ' : ' + pixel.message;
+  }
+
   async function loadPixels() {
     const { data, error } = await db.from('pixels').select('*');
     if (error) { console.error('Erreur chargement:', error); return; }
-
     data.forEach(pixel => {
       pixelData[pixel.id] = pixel;
-      const px = wall.children[pixel.id];
-      if (!px) return;
-
-      if (pixel.image) {
-        const img = document.createElement('img');
-        img.src = pixel.image;
-        px.appendChild(img);
-      } else {
-        px.style.background = pixel.color || '#fff';
-      }
-      px.classList.add('sold');
-      if (pixel.message) px.title = pixel.pseudo + ' : ' + pixel.message;
+      applyPixelToDOM(pixel);
     });
-
     updateStats();
     updateTicker();
   }
 
-  // =============================================
-  // TEMPS RÉEL — nouveaux pixels
-  // =============================================
   db.channel('pixels-realtime')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pixels' }, payload => {
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'pixels'
+    }, payload => {
       const pixel = payload.new;
       pixelData[pixel.id] = pixel;
-      const px = wall.children[pixel.id];
-      if (!px) return;
-
-      if (pixel.image) {
-        const img = document.createElement('img');
-        img.src = pixel.image;
-        px.appendChild(img);
-      } else {
-        px.style.background = pixel.color || '#fff';
-      }
-      px.classList.add('sold');
-      if (pixel.message) px.title = pixel.pseudo + ' : ' + pixel.message;
-
+      applyPixelToDOM(pixel);
       updateStats();
       updateTicker();
     })
     .subscribe();
 
-  // =============================================
-  // COLOR SWATCHES
-  // =============================================
   const swatchContainer = document.getElementById('color-swatches');
   PRESET_COLORS.forEach(c => {
     const s = document.createElement('div');
@@ -515,9 +441,6 @@
     document.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('active'));
   });
 
-  // =============================================
-  // TABS
-  // =============================================
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       activeTab = btn.dataset.tab;
@@ -528,9 +451,6 @@
     });
   });
 
-  // =============================================
-  // IMAGE UPLOAD
-  // =============================================
   const uploadZone = document.getElementById('upload-zone');
   const fileInput = document.getElementById('file-input');
   const uploadPreview = document.getElementById('upload-preview');
@@ -550,9 +470,6 @@
     reader.readAsDataURL(file);
   });
 
-  // =============================================
-  // PIXEL CLICK
-  // =============================================
   function onPixelClick(index, el) {
     if (pixelData[index]) {
       if (pixelData[index].url) window.open(pixelData[index].url, '_blank');
@@ -571,9 +488,6 @@
     document.getElementById('modal-overlay').classList.add('open');
   }
 
-  // =============================================
-  // MODAL CLOSE
-  // =============================================
   document.getElementById('btn-close').addEventListener('click', closeModal);
   document.getElementById('modal-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('modal-overlay')) closeModal();
@@ -583,9 +497,6 @@
     selectedPixelIndex = null;
   }
 
-  // =============================================
-  // ACHAT → SUPABASE
-  // =============================================
   document.getElementById('btn-acheter').addEventListener('click', async () => {
     if (selectedPixelIndex === null) return;
     const pseudo = document.getElementById('pixel-pseudo').value.trim();
@@ -626,15 +537,11 @@
     showToast('✅ Ta trace est laissée pour toujours !');
   });
 
-  // =============================================
-  // STATS
-  // =============================================
   function updateStats() {
     const sold = Object.keys(pixelData).length;
     const percent = ((sold / TOTAL_PIXELS) * 100).toFixed(3);
     const statSold = document.getElementById('stat-sold');
     const statLabel = document.getElementById('stat-label');
-
     if (sold === 0) {
       statSold.textContent = '—';
       statLabel.textContent = 'Sois le premier à laisser ta trace';
@@ -645,9 +552,6 @@
     document.getElementById('stat-percent').textContent = percent + '%';
   }
 
-  // =============================================
-  // TICKER
-  // =============================================
   function updateTicker() {
     const pseudos = Object.values(pixelData).filter(p => p.pseudo).map(p => p.pseudo);
     if (pseudos.length === 0) {
@@ -662,9 +566,6 @@
     ).join('');
   }
 
-  // =============================================
-  // TOAST
-  // =============================================
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -672,9 +573,6 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  // =============================================
-  // INIT
-  // =============================================
   loadPixels();
 </script>
 </body>
