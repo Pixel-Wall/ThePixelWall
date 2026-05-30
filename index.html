@@ -22,9 +22,7 @@
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 800;
     letter-spacing: -1px;
-    background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #f0c040;
     margin-bottom: 20px;
   }
   .hero .tagline {
@@ -52,14 +50,43 @@
     font-weight: 700;
   }
 
+  /* BANDEAU DÉFILANT */
+  .ticker-wrap {
+    width: 100%;
+    background: #111;
+    border-top: 1px solid #1e1e1e;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 10px 0;
+    overflow: hidden;
+    display: none;
+  }
+  .ticker-wrap.visible { display: block; }
+  .ticker {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker-scroll 20s linear infinite;
+  }
+  .ticker-item {
+    padding: 0 32px;
+    font-size: 0.85rem;
+    color: #888;
+  }
+  .ticker-item span {
+    color: #f0c040;
+    font-weight: 600;
+  }
+  @keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* STATS */
   .stats-bar {
     display: flex;
     justify-content: center;
     gap: 48px;
     padding: 16px 20px;
-    background: #111;
-    border-top: 1px solid #1e1e1e;
-    border-bottom: 1px solid #1e1e1e;
+    background: #0f0f0f;
     flex-wrap: wrap;
   }
   .stat { text-align: center; }
@@ -127,14 +154,12 @@
     width: 8px;
     height: 8px;
     background: #ffffff;
-    transition: transform 0.05s;
     position: relative;
     overflow: hidden;
   }
   .pixel:hover {
-    transform: scale(1.5);
-    z-index: 10;
     outline: 1px solid #f0c040;
+    z-index: 10;
   }
   .pixel.sold { cursor: pointer; }
   .pixel img {
@@ -369,10 +394,15 @@
   <div class="price-tag">1 pixel = <span>1€</span> · Trace permanente sur internet</div>
 </div>
 
+<!-- BANDEAU DÉFILANT -->
+<div class="ticker-wrap" id="ticker-wrap">
+  <div class="ticker" id="ticker"></div>
+</div>
+
 <div class="stats-bar">
   <div class="stat">
-    <div class="value" id="stat-sold">0</div>
-    <div class="label">Pixels vendus</div>
+    <div class="value" id="stat-sold">—</div>
+    <div class="label" id="stat-label">Sois le premier à laisser ta trace</div>
   </div>
   <div class="stat">
     <div class="value" id="stat-percent">0%</div>
@@ -425,8 +455,11 @@
       </div>
     </div>
 
+    <label>Ton pseudo (obligatoire)</label>
+    <input type="text" id="pixel-pseudo" maxlength="30" placeholder="Ex: Marie75 🌟">
+
     <label>Ton message (optionnel)</label>
-    <input type="text" id="pixel-message" maxlength="60" placeholder="Ex: Marie était ici 🌟">
+    <input type="text" id="pixel-message" maxlength="60" placeholder="Ex: J'étais là ✨">
 
     <label>Lien URL (optionnel)</label>
     <input type="text" id="pixel-url" placeholder="https://tonsite.com">
@@ -437,7 +470,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast">✅ Pixel réservé !</div>
+<div class="toast" id="toast">✅ Trace laissée !</div>
 
 <div class="footer-note">
   Chaque pixel est unique · La trace est permanente · 1€ = 1 pixel pour toujours
@@ -459,6 +492,7 @@
   let selectedImageData = null;
   let activeTab = 'couleur';
 
+  // BUILD GRID
   const wall = document.getElementById('pixel-wall');
   for (let i = 0; i < TOTAL_PIXELS; i++) {
     const px = document.createElement('div');
@@ -479,6 +513,7 @@
     wall.appendChild(px);
   }
 
+  // COLOR SWATCHES
   const swatchContainer = document.getElementById('color-swatches');
   PRESET_COLORS.forEach(c => {
     const s = document.createElement('div');
@@ -499,6 +534,7 @@
     document.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('active'));
   });
 
+  // TABS
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       activeTab = btn.dataset.tab;
@@ -509,6 +545,7 @@
     });
   });
 
+  // IMAGE UPLOAD
   const uploadZone = document.getElementById('upload-zone');
   const fileInput = document.getElementById('file-input');
   const uploadPreview = document.getElementById('upload-preview');
@@ -531,11 +568,13 @@
     reader.readAsDataURL(file);
   });
 
+  // PIXEL CLICK
   function onPixelClick(index, el) {
     if (pixelData[index] && pixelData[index].url) {
       window.open(pixelData[index].url, '_blank');
       return;
     }
+    if (pixelData[index]) return;
     const col = (index % GRID_COLS) + 1;
     const row = Math.floor(index / GRID_COLS) + 1;
     selectedPixelIndex = index;
@@ -544,11 +583,13 @@
     fileInput.value = '';
     document.getElementById('modal-pixel-info').textContent =
       `Pixel #${index + 1} · Ligne ${row}, Colonne ${col}`;
+    document.getElementById('pixel-pseudo').value = '';
     document.getElementById('pixel-message').value = '';
     document.getElementById('pixel-url').value = '';
     document.getElementById('modal-overlay').classList.add('open');
   }
 
+  // MODAL CLOSE
   document.getElementById('btn-close').addEventListener('click', closeModal);
   document.getElementById('modal-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('modal-overlay')) closeModal();
@@ -558,39 +599,79 @@
     selectedPixelIndex = null;
   }
 
+  // ACHAT
   document.getElementById('btn-acheter').addEventListener('click', () => {
     if (selectedPixelIndex === null) return;
+    const pseudo = document.getElementById('pixel-pseudo').value.trim();
+    if (!pseudo) {
+      alert('Merci de saisir un pseudo pour laisser ta trace !');
+      return;
+    }
     const message = document.getElementById('pixel-message').value.trim();
     const url = document.getElementById('pixel-url').value.trim();
     const px = wall.children[selectedPixelIndex];
 
     if (activeTab === 'image' && selectedImageData) {
-      pixelData[selectedPixelIndex] = { image: selectedImageData, message, url, ts: Date.now() };
+      pixelData[selectedPixelIndex] = { image: selectedImageData, pseudo, message, url, ts: Date.now() };
       px.innerHTML = '';
       const img = document.createElement('img');
       img.src = selectedImageData;
       px.appendChild(img);
     } else {
-      pixelData[selectedPixelIndex] = { color: selectedColor, message, url, ts: Date.now() };
+      pixelData[selectedPixelIndex] = { color: selectedColor, pseudo, message, url, ts: Date.now() };
       px.style.background = selectedColor;
     }
 
     px.classList.add('sold');
-    if (message) px.title = message;
+    if (message) px.title = pseudo + ' : ' + message;
     localStorage.setItem('pixelwall_data', JSON.stringify(pixelData));
     updateStats();
+    updateTicker();
     closeModal();
-    showToast('✅ Pixel réservé ! (paiement Stripe en Phase 3)');
+    showToast('✅ Ta trace est laissée pour toujours !');
   });
 
+  // STATS
   function updateStats() {
     const sold = Object.keys(pixelData).length;
     const percent = ((sold / TOTAL_PIXELS) * 100).toFixed(3);
-    document.getElementById('stat-sold').textContent = sold.toLocaleString('fr-FR');
+    const statSold = document.getElementById('stat-sold');
+    const statLabel = document.getElementById('stat-label');
+
+    if (sold === 0) {
+      statSold.textContent = '—';
+      statLabel.textContent = 'Sois le premier à laisser ta trace';
+    } else {
+      statSold.textContent = sold.toLocaleString('fr-FR');
+      statLabel.textContent = sold === 1 ? 'trace laissée' : 'traces laissées';
+    }
     document.getElementById('stat-percent').textContent = percent + '%';
   }
-  updateStats();
 
+  // TICKER
+  function updateTicker() {
+    const pseudos = Object.values(pixelData)
+      .filter(p => p.pseudo)
+      .map(p => p.pseudo);
+
+    if (pseudos.length === 0) {
+      document.getElementById('ticker-wrap').classList.remove('visible');
+      return;
+    }
+
+    document.getElementById('ticker-wrap').classList.add('visible');
+    const ticker = document.getElementById('ticker');
+    // Dupliquer pour boucle infinie
+    const allItems = [...pseudos, ...pseudos];
+    ticker.innerHTML = allItems.map(p =>
+      `<span class="ticker-item">✦ <span>${p}</span> a laissé sa trace</span>`
+    ).join('');
+  }
+
+  updateStats();
+  updateTicker();
+
+  // TOAST
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
