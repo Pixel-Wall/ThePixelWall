@@ -2,23 +2,27 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>The Pixel Wall</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; }
 
-  .hero { text-align: center; padding: 48px 20px 32px; }
-  .hero .tagline { font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 6px; }
+  /* HERO */
+  .hero { text-align: center; padding: 32px 20px 24px; }
+  .hero img { height: clamp(60px, 10vw, 140px); width: auto; margin-bottom: 16px; mix-blend-mode: screen; }
+  .hero .tagline { font-size: clamp(0.9rem, 2.5vw, 1.1rem); color: #aaa; line-height: 1.8; margin-bottom: 6px; }
   .hero .tagline strong { color: #fff; font-weight: 600; }
-  .hero .price-tag { display: inline-block; background: #1a1a1a; border: 1px solid #333; border-radius: 999px; padding: 8px 24px; font-size: 0.95rem; color: #fff; margin-top: 20px; }
+  .hero .price-tag { display: inline-block; background: #1a1a1a; border: 1px solid #333; border-radius: 999px; padding: 8px 20px; font-size: clamp(0.85rem, 2vw, 0.95rem); color: #fff; margin-top: 16px; }
   .hero .price-tag span { color: #f0c040; font-weight: 700; }
 
-  .citation-mobile { display: none; text-align: center; padding: 20px 24px; background: #0f0f0f; border-top: 1px solid #1e1e1e; }
-  .citation-mobile p { color: #888; font-size: 0.9rem; font-style: italic; line-height: 1.6; border-left: 3px solid #f0c040; padding-left: 14px; text-align: left; }
+  /* CITATION MOBILE */
+  .citation-mobile { display: none; text-align: center; padding: 16px 20px; background: #0f0f0f; border-top: 1px solid #1e1e1e; }
+  .citation-mobile p { color: #888; font-size: 0.85rem; font-style: italic; line-height: 1.6; border-left: 3px solid #f0c040; padding-left: 14px; text-align: left; }
   .citation-mobile span { display: block; color: #f0c040; font-size: 0.75rem; margin-top: 8px; font-style: normal; letter-spacing: 1px; }
 
+  /* TICKER */
   .ticker-wrap { width: 100%; background: #111; border-top: 1px solid #1e1e1e; border-bottom: 1px solid #1e1e1e; padding: 10px 0; overflow: hidden; display: none; }
   .ticker-wrap.visible { display: block; }
   .ticker { display: flex; white-space: nowrap; animation: ticker-scroll 30s linear infinite; }
@@ -26,64 +30,95 @@
   .ticker-item span { color: #f0c040; font-weight: 600; }
   @keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-  .stats-bar { display: flex; justify-content: center; gap: 48px; padding: 16px 20px; background: #0f0f0f; flex-wrap: wrap; }
+  /* STATS */
+  .stats-bar { display: flex; justify-content: center; gap: 32px; padding: 14px 20px; background: #0f0f0f; flex-wrap: wrap; }
   .stat { text-align: center; }
-  .stat .value { font-size: 1.4rem; font-weight: 700; color: #f0c040; }
-  .stat .label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .stat .value { font-size: clamp(1.1rem, 3vw, 1.4rem); font-weight: 700; color: #f0c040; }
+  .stat .label { font-size: 0.72rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
-  .wall-section { display: flex; justify-content: center; align-items: flex-start; gap: 32px; padding: 32px 20px; background: #0a0a0a; }
+  /* WALL SECTION */
+  .wall-section { display: flex; justify-content: center; align-items: flex-start; gap: 32px; padding: 24px 16px; background: #0a0a0a; }
   .citation-block { width: 200px; flex-shrink: 0; padding-top: 60px; }
   .citation-block blockquote { border-left: 3px solid #f0c040; padding-left: 16px; color: #888; font-size: 0.95rem; line-height: 1.7; font-style: italic; }
   .citation-block blockquote strong { display: block; margin-top: 12px; color: #f0c040; font-style: normal; font-size: 0.8rem; letter-spacing: 1px; }
-  .wall-wrapper { flex-shrink: 0; }
+  .wall-wrapper { flex-shrink: 0; width: 100%; max-width: 820px; }
 
-  .wall-hint { text-align: center; color: #555; font-size: 0.8rem; margin-bottom: 8px; line-height: 1.6; }
+  /* HINT + CONTROLES */
+  .wall-hint { text-align: center; color: #666; font-size: 0.78rem; margin-bottom: 8px; line-height: 1.6; padding: 0 8px; }
   .wall-hint span { color: #f0c040; }
-  .zoom-controls { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
-  .zoom-btn { background: #1a1a1a; border: 1px solid #333; color: #fff; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-  .zoom-btn:hover { background: #f0c040; color: #000; border-color: #f0c040; }
-  .zoom-label { color: #555; font-size: 0.8rem; min-width: 48px; text-align: center; }
-  .btn-random { background: #1a1a1a; border: 1px solid #f0c040; color: #f0c040; padding: 0 16px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
-  .btn-random:hover { background: #f0c040; color: #000; }
+  .zoom-controls { display: flex; align-items: center; gap: 6px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; padding: 0 8px; }
+  .zoom-btn { background: #1a1a1a; border: 1px solid #333; color: #fff; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  .zoom-btn:hover, .zoom-btn:active { background: #f0c040; color: #000; border-color: #f0c040; }
+  .zoom-label { color: #555; font-size: 0.8rem; min-width: 44px; text-align: center; }
+  .btn-random { background: #1a1a1a; border: 1px solid #f0c040; color: #f0c040; padding: 0 12px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+  .btn-random:hover, .btn-random:active { background: #f0c040; color: #000; }
 
-  #canvas-container { width: 800px; height: 800px; overflow: hidden; position: relative; border: 1px solid #2a2a2a; cursor: crosshair; user-select: none; -webkit-user-select: none; background: #1a1a1a; }
+  /* CANVAS */
+  #canvas-container {
+    width: 800px; height: 800px;
+    overflow: hidden; position: relative;
+    border: 1px solid #2a2a2a;
+    cursor: crosshair;
+    user-select: none; -webkit-user-select: none;
+    background: #1a1a1a;
+    margin: 0 auto;
+    touch-action: none;
+  }
   #pixel-canvas { position: absolute; top: 0; left: 0; image-rendering: pixelated; image-rendering: crisp-edges; }
   #overlay-canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 5; }
   #hover-indicator { position: absolute; pointer-events: none; border: 2px solid #f0c040; display: none; z-index: 10; box-sizing: border-box; box-shadow: 0 0 8px rgba(240,192,64,0.7); }
-  .pixel-coords { text-align: center; color: #444; font-size: 0.75rem; margin-top: 8px; height: 16px; }
+  .pixel-coords { text-align: center; color: #444; font-size: 0.72rem; margin-top: 6px; height: 16px; padding: 0 8px; }
 
-  .selection-bar { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: #141414; border: 1px solid #f0c040; border-radius: 16px; padding: 16px 24px; display: none; align-items: center; gap: 16px; z-index: 2000; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+  /* BARRE SÉLECTION */
+  .selection-bar {
+    position: fixed; bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    background: #141414; border: 1px solid #f0c040;
+    border-radius: 16px; padding: 12px 20px;
+    display: none; align-items: center; gap: 12px;
+    z-index: 2000; box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+    max-width: 95vw;
+  }
   .selection-bar.visible { display: flex; }
-  .sel-info { font-size: 0.95rem; color: #fff; }
+  .sel-info { font-size: 0.9rem; color: #fff; white-space: nowrap; }
   .sel-info span { color: #f0c040; font-weight: 700; }
-  .sel-clear { background: none; border: 1px solid #333; color: #888; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+  .sel-clear { background: none; border: 1px solid #333; color: #888; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.78rem; white-space: nowrap; }
   .sel-clear:hover { border-color: #fff; color: #fff; }
-  .sel-pay { background: #f0c040; color: #000; font-weight: 700; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-size: 0.95rem; }
-  .sel-pay:hover { background: #ffd050; }
+  .sel-pay { background: #f0c040; color: #000; font-weight: 700; padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
+  .sel-pay:hover, .sel-pay:active { background: #ffd050; }
 
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
-  .modal { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; width: 90%; max-width: 420px; position: relative; max-height: 90vh; overflow-y: auto; }
-  .modal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
-  .modal .pixel-info { font-size: 0.8rem; color: #555; margin-bottom: 24px; }
-  .modal label { display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; margin-top: 16px; }
-  .modal input[type="text"] { width: 100%; background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 8px; color: #fff; padding: 10px 14px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+  .modal {
+    background: #141414; border: 1px solid #2a2a2a;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 32px;
+    width: 100%; max-width: 480px;
+    position: relative;
+    max-height: 92vh; overflow-y: auto;
+  }
+  .modal-drag { width: 40px; height: 4px; background: #333; border-radius: 2px; margin: 0 auto 20px; }
+  .modal h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+  .modal .pixel-info { font-size: 0.8rem; color: #555; margin-bottom: 20px; }
+  .modal label { display: block; font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; margin-top: 16px; }
+  .modal input[type="text"] { width: 100%; background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 10px; color: #fff; padding: 12px 14px; font-size: 1rem; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
   .modal input[type="text"]:focus { border-color: #f0c040; }
 
   .tabs { display: flex; gap: 8px; margin-top: 16px; }
-  .tab-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #2e2e2e; background: #1e1e1e; color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+  .tab-btn { flex: 1; padding: 10px 8px; border-radius: 10px; border: 1px solid #2e2e2e; background: #1e1e1e; color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
   .tab-btn.active { background: #f0c040; color: #000; border-color: #f0c040; font-weight: 700; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
-  .color-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-  .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s, transform 0.15s; }
+  .color-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s, transform 0.15s; }
   .color-swatch:hover, .color-swatch.active { border-color: #fff; transform: scale(1.15); }
-  .color-picker-wrap { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-  .color-picker-wrap input[type="color"] { width: 40px; height: 40px; padding: 2px; cursor: pointer; border-radius: 8px; border: none; background: none; }
+  .color-picker-wrap { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .color-picker-wrap input[type="color"] { width: 44px; height: 44px; padding: 2px; cursor: pointer; border-radius: 8px; border: none; background: none; }
 
-  .upload-zone { border: 2px dashed #2e2e2e; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; margin-top: 8px; }
-  .upload-zone:hover { border-color: #f0c040; }
+  .upload-zone { border: 2px dashed #2e2e2e; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.2s; margin-top: 10px; }
+  .upload-zone:hover, .upload-zone:active { border-color: #f0c040; }
   .upload-zone p { color: #666; font-size: 0.85rem; margin-top: 8px; }
   .upload-zone .icon { font-size: 2rem; }
   .upload-preview { margin-top: 12px; display: none; text-align: center; }
@@ -91,36 +126,60 @@
   .upload-preview p { font-size: 0.75rem; color: #888; margin-top: 4px; }
   input[type="file"] { display: none; }
 
-  .btn-primary { width: 100%; margin-top: 24px; padding: 14px; background: #f0c040; color: #000; font-weight: 700; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
-  .btn-primary:hover { background: #ffd050; transform: translateY(-1px); }
-  .btn-primary:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
-  .btn-close { position: absolute; top: 16px; right: 16px; background: #1e1e1e; border: none; color: #888; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
-  .btn-close:hover { color: #fff; }
+  .btn-primary { width: 100%; margin-top: 24px; padding: 16px; background: #f0c040; color: #000; font-weight: 700; font-size: 1rem; border: none; border-radius: 12px; cursor: pointer; transition: background 0.2s; -webkit-appearance: none; }
+  .btn-primary:active { background: #ffd050; }
+  .btn-primary:disabled { background: #555; color: #888; cursor: not-allowed; }
+  .btn-close { position: absolute; top: 16px; right: 16px; background: #1e1e1e; border: none; color: #888; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
 
-  .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(120px); background: #f0c040; color: #000; font-weight: 700; padding: 12px 28px; border-radius: 999px; font-size: 0.95rem; z-index: 3000; transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275); pointer-events: none; white-space: nowrap; }
+  /* TOAST */
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(120px); background: #f0c040; color: #000; font-weight: 700; padding: 12px 24px; border-radius: 999px; font-size: 0.9rem; z-index: 3000; transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275); pointer-events: none; white-space: nowrap; max-width: 90vw; text-align: center; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .footer { text-align: center; padding: 32px 20px; color: #444; font-size: 0.8rem; border-top: 1px solid #1a1a1a; }
+  /* FOOTER */
+  .footer { text-align: center; padding: 24px 20px 40px; color: #444; font-size: 0.78rem; border-top: 1px solid #1a1a1a; }
   .footer a { color: #f0c040; text-decoration: none; cursor: pointer; }
 
-  .modal-legal { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; width: 90%; max-width: 600px; position: relative; max-height: 85vh; overflow-y: auto; }
-  .modal-legal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; color: #f0c040; }
-  .modal-legal h3 { font-size: 1rem; font-weight: 700; margin-top: 24px; margin-bottom: 8px; color: #fff; }
-  .modal-legal p { font-size: 0.85rem; color: #888; line-height: 1.7; margin-bottom: 8px; }
-  .modal-legal ul { padding-left: 20px; }
-  .modal-legal ul li { font-size: 0.85rem; color: #888; line-height: 1.7; }
+  /* MODAL LEGAL */
+  .modal-legal { background: #141414; border: 1px solid #2a2a2a; border-radius: 20px 20px 0 0; padding: 24px 20px 40px; width: 100%; max-width: 600px; position: relative; max-height: 90vh; overflow-y: auto; }
+  .modal-legal h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: #f0c040; }
+  .modal-legal h3 { font-size: 0.95rem; font-weight: 700; margin-top: 20px; margin-bottom: 8px; color: #fff; }
+  .modal-legal p { font-size: 0.82rem; color: #888; line-height: 1.7; margin-bottom: 8px; }
+  .modal-legal ul { padding-left: 18px; }
+  .modal-legal ul li { font-size: 0.82rem; color: #888; line-height: 1.7; }
 
-  @media (max-width: 1100px) { .citation-block { display: none; } .citation-mobile { display: block; } .wall-section { padding: 24px 0; } }
-  @media (max-width: 860px) { #canvas-container { width: 600px; height: 600px; } }
-  @media (max-width: 640px) { #canvas-container { width: 95vw; height: 95vw; } .selection-bar { width: 90%; flex-direction: column; text-align: center; } }
+  /* RESPONSIVE */
+  @media (min-width: 1101px) {
+    .citation-mobile { display: none !important; }
+    .modal-overlay { align-items: center; }
+    .modal { border-radius: 16px; padding: 32px; }
+    .modal-legal { border-radius: 16px; }
+  }
+  @media (max-width: 1100px) {
+    .citation-block { display: none; }
+    .citation-mobile { display: block; }
+    .wall-section { padding: 16px 0 0; }
+  }
+  @media (max-width: 840px) {
+    #canvas-container { width: calc(100vw - 16px); height: calc(100vw - 16px); max-width: 600px; max-height: 600px; }
+  }
+  @media (max-width: 480px) {
+    #canvas-container { width: calc(100vw - 8px); height: calc(100vw - 8px); }
+    .zoom-controls { gap: 4px; }
+    .zoom-btn { width: 32px; height: 32px; font-size: 1rem; }
+    .btn-random { font-size: 0.75rem; padding: 0 10px; height: 32px; }
+    .selection-bar { padding: 10px 14px; gap: 8px; bottom: 12px; }
+    .sel-info { font-size: 0.82rem; }
+    .sel-pay { padding: 8px 12px; font-size: 0.82rem; }
+    .sel-clear { padding: 6px 8px; font-size: 0.75rem; }
+  }
 </style>
 </head>
 <body>
 
 <div class="hero">
-  <img src="logo.png" alt="The Pixel Wall" style="height: clamp(80px, 12vw, 160px); width: auto; margin-bottom: 20px; mix-blend-mode: screen;">
+  <img src="logo.png" alt="The Pixel Wall">
   <p class="tagline">Un jour tu ne seras plus là.<br><strong>Ton message, lui, restera ici pour toujours.</strong></p>
-  <p class="tagline" style="margin-top:8px;">Laisse une trace pour les générations<br>qui ne t'auront jamais connu.</p>
+  <p class="tagline" style="margin-top:6px;">Laisse une trace pour les générations<br>qui ne t'auront jamais connu.</p>
   <div class="price-tag">1 pixel = <span>1€</span> · Trace permanente sur internet</div>
 </div>
 
@@ -153,15 +212,15 @@
     </blockquote>
   </div>
   <div class="wall-wrapper">
-    <div class="wall-hint">
-      👆 <span>Clique n'importe où</span> pour choisir ton pixel · Zoom molette pour explorer · Ou choisis au hasard
+    <div class="wall-hint" id="wall-hint">
+      👆 <span>Touche le mur</span> pour choisir ton pixel · Pinch pour zoomer · <span>Plusieurs pixels possibles</span>
     </div>
     <div class="zoom-controls">
       <button class="zoom-btn" id="btn-zoom-out">−</button>
       <span class="zoom-label" id="zoom-level">80%</span>
       <button class="zoom-btn" id="btn-zoom-in">+</button>
-      <button class="zoom-btn" id="btn-zoom-reset" style="width:auto;padding:0 12px;font-size:0.75rem;">↺ Vue globale</button>
-      <button class="btn-random" id="btn-random">🎲 Pixel aléatoire</button>
+      <button class="zoom-btn" id="btn-zoom-reset" style="width:auto;padding:0 10px;font-size:0.72rem;">↺ Global</button>
+      <button class="btn-random" id="btn-random">🎲 Aléatoire</button>
     </div>
     <div id="canvas-container">
       <canvas id="pixel-canvas"></canvas>
@@ -172,14 +231,17 @@
   </div>
 </div>
 
+<!-- Barre sélection -->
 <div class="selection-bar" id="selection-bar">
-  <div class="sel-info" id="sel-info"><span>0</span> pixel sélectionné · <span>0€</span></div>
+  <div class="sel-info" id="sel-info"><span>0</span> pixel · <span>0€</span></div>
   <button class="sel-clear" id="sel-clear">✕ Vider</button>
-  <button class="sel-pay" id="sel-pay">Payer →</button>
+  <button class="sel-pay" id="sel-pay">🎨 Personnaliser →</button>
 </div>
 
+<!-- Modal personnalisation -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
+    <div class="modal-drag"></div>
     <button class="btn-close" id="btn-close">✕</button>
     <h2>🎨 Personnalise tes pixels</h2>
     <div class="pixel-info" id="modal-pixel-info">Pixel #0</div>
@@ -199,7 +261,7 @@
       <label>Upload une image</label>
       <div class="upload-zone" id="upload-zone">
         <div class="icon">📁</div>
-        <p>Clique pour choisir une image<br><small>JPG, PNG, GIF · Max 2Mo</small></p>
+        <p>Appuie pour choisir une image<br><small>JPG, PNG, GIF · Max 2Mo</small></p>
         <input type="file" id="file-input" accept="image/*">
       </div>
       <div class="upload-preview" id="upload-preview">
@@ -217,14 +279,15 @@
   </div>
 </div>
 
+<!-- Modal légal -->
 <div class="modal-overlay" id="modal-legal-overlay">
   <div class="modal-legal">
+    <div class="modal-drag"></div>
     <button class="btn-close" id="btn-close-legal">✕</button>
     <h2>📄 Mentions légales & CGV</h2>
     <h3>Éditeur du site</h3>
     <p>Le site The Pixel Wall est édité par <strong>Pixel Trace</strong>, micro-entreprise en cours de création, France.</p>
     <h3>Conditions Générales de Vente</h3>
-    <p>En achetant un pixel sur The Pixel Wall, vous acceptez les présentes CGV.</p>
     <ul>
       <li>Chaque pixel est vendu au prix unique de <strong>1€ TTC</strong>.</li>
       <li>L'achat est définitif et non remboursable — la trace est permanente.</li>
@@ -236,8 +299,7 @@
     <h3>Droit de rétractation</h3>
     <p>Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne s'applique pas aux contenus numériques personnalisés.</p>
     <h3>Politique de confidentialité & RGPD</h3>
-    <p>Les données collectées sont stockées de manière sécurisée et visibles publiquement sur le mur.</p>
-    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données.</p>
+    <p>Les données collectées sont stockées de manière sécurisée et visibles publiquement sur le mur. Vous disposez d'un droit d'accès, de rectification et de suppression.</p>
     <h3>Hébergement</h3>
     <p>Site hébergé par GitHub Pages. Base de données hébergée par Supabase.</p>
     <h3>Propriété intellectuelle</h3>
@@ -246,6 +308,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
 <div class="footer">
   Chaque pixel est unique · La trace est permanente · 1€ = 1 pixel pour toujours<br><br>
   <a id="link-legal">Mentions légales & CGV</a>
@@ -262,7 +325,7 @@
   const GRID_SIZE = 1000;
   const TOTAL_PIXELS = GRID_SIZE * GRID_SIZE;
   const PRESET_COLORS = ['#f0c040','#ff4d4d','#ff8c00','#4caf50','#2196f3','#9c27b0','#e91e63','#00bcd4','#fff','#888','#333','#000'];
-  const MIN_DOT_PX = 3; // taille minimum d'affichage d'un pixel vendu
+  const MIN_DOT_PX = 5;
 
   let pixelData = {};
   let selectedPixels = new Set();
@@ -284,7 +347,9 @@
 
   let scale = 0.8, offsetX = 0, offsetY = 0;
 
-  function getContainerSize() { return { w: container.offsetWidth, h: container.offsetHeight }; }
+  function getContainerSize() {
+    return { w: container.offsetWidth, h: container.offsetHeight };
+  }
 
   function applyTransform() {
     const dW = GRID_SIZE * scale, dH = GRID_SIZE * scale;
@@ -316,7 +381,6 @@
     if (callback) callback();
   }
 
-  // Overlay : grille + points minimum pour pixels vendus
   function drawOverlay() {
     const { w, h } = getContainerSize();
     overlayCanvas.width = w;
@@ -327,38 +391,33 @@
     let gridStep = 0, lineColor = '', lineWidth = 0.5;
     if (scale >= 6) { gridStep = 1; lineColor = 'rgba(180,180,180,0.3)'; }
     else if (scale >= 2) { gridStep = 10; lineColor = 'rgba(130,130,130,0.25)'; }
-    else if (scale >= 0.5) { gridStep = 100; lineColor = 'rgba(80,80,80,0.5)'; lineWidth = 1; }
+    else { gridStep = 100; lineColor = 'rgba(160,160,160,0.85)'; lineWidth = 1.5; }
 
-    if (gridStep > 0) {
-      oCtx.strokeStyle = lineColor;
-      oCtx.lineWidth = lineWidth;
-      const startX = Math.max(0, Math.floor(-offsetX / scale / gridStep) * gridStep);
-      const endX = Math.min(GRID_SIZE, Math.ceil((w - offsetX) / scale / gridStep + 1) * gridStep);
-      for (let x = startX; x <= endX; x += gridStep) {
-        const sx = Math.round(x * scale + offsetX) + 0.5;
-        if (sx < 0 || sx > w) continue;
-        oCtx.beginPath(); oCtx.moveTo(sx, 0); oCtx.lineTo(sx, h); oCtx.stroke();
-      }
-      const startY = Math.max(0, Math.floor(-offsetY / scale / gridStep) * gridStep);
-      const endY = Math.min(GRID_SIZE, Math.ceil((h - offsetY) / scale / gridStep + 1) * gridStep);
-      for (let y = startY; y <= endY; y += gridStep) {
-        const sy = Math.round(y * scale + offsetY) + 0.5;
-        if (sy < 0 || sy > h) continue;
-        oCtx.beginPath(); oCtx.moveTo(0, sy); oCtx.lineTo(w, sy); oCtx.stroke();
-      }
+    oCtx.strokeStyle = lineColor;
+    oCtx.lineWidth = lineWidth;
+    const startX = Math.max(0, Math.floor(-offsetX / scale / gridStep) * gridStep);
+    const endX = Math.min(GRID_SIZE, Math.ceil((w - offsetX) / scale / gridStep + 1) * gridStep);
+    for (let x = startX; x <= endX; x += gridStep) {
+      const sx = Math.round(x * scale + offsetX) + 0.5;
+      if (sx < 0 || sx > w) continue;
+      oCtx.beginPath(); oCtx.moveTo(sx, 0); oCtx.lineTo(sx, h); oCtx.stroke();
+    }
+    const startY = Math.max(0, Math.floor(-offsetY / scale / gridStep) * gridStep);
+    const endY = Math.min(GRID_SIZE, Math.ceil((h - offsetY) / scale / gridStep + 1) * gridStep);
+    for (let y = startY; y <= endY; y += gridStep) {
+      const sy = Math.round(y * scale + offsetY) + 0.5;
+      if (sy < 0 || sy > h) continue;
+      oCtx.beginPath(); oCtx.moveTo(0, sy); oCtx.lineTo(w, sy); oCtx.stroke();
     }
 
-    // Points minimum pour pixels vendus (visibles de loin)
+    // Points visibles de loin
     if (scale < MIN_DOT_PX) {
-      const dotSize = MIN_DOT_PX;
       Object.values(pixelData).forEach(pixel => {
-        const x = pixel.id % GRID_SIZE;
-        const y = Math.floor(pixel.id / GRID_SIZE);
-        const sx = x * scale + offsetX;
-        const sy = y * scale + offsetY;
-        if (sx < -dotSize || sx > w + dotSize || sy < -dotSize || sy > h + dotSize) return;
+        const x = pixel.id % GRID_SIZE, y = Math.floor(pixel.id / GRID_SIZE);
+        const sx = x * scale + offsetX, sy = y * scale + offsetY;
+        if (sx < -MIN_DOT_PX || sx > w + MIN_DOT_PX || sy < -MIN_DOT_PX || sy > h + MIN_DOT_PX) return;
         oCtx.fillStyle = pixel.color || '#f0c040';
-        oCtx.fillRect(sx - dotSize / 2, sy - dotSize / 2, dotSize, dotSize);
+        oCtx.fillRect(sx - MIN_DOT_PX / 2, sy - MIN_DOT_PX / 2, MIN_DOT_PX, MIN_DOT_PX);
       });
     }
   }
@@ -379,6 +438,7 @@
     zoomTo(scale * (e.deltaY < 0 ? 1.2 : 0.85), e.clientX - rect.left, e.clientY - rect.top);
   }, { passive: false });
 
+  // Mouse
   let isDragging = false, didDrag = false, dragStartX, dragStartY, dragOffsetX, dragOffsetY;
 
   container.addEventListener('mousedown', (e) => {
@@ -400,7 +460,7 @@
   });
 
   document.addEventListener('mouseup', (e) => {
-    if (isDragging && !didDrag) handleClick(e);
+    if (isDragging && !didDrag) handleTap(e.clientX, e.clientY);
     isDragging = false;
     container.style.cursor = 'crosshair';
   });
@@ -428,32 +488,86 @@
     hoverIndicator.style.height = Math.max(2, scale) + 'px';
     hoverIndicator.style.borderColor = isSold ? '#ff4d4d' : isSelected ? '#fff' : '#f0c040';
     document.getElementById('pixel-coords').textContent = isSold
-      ? `Pixel #${index + 1} — Déjà pris · Cliquez pour voir le message`
+      ? `Pixel #${index + 1} — Déjà pris`
       : isSelected ? `Pixel #${index + 1} — Sélectionné ✓`
       : `Pixel #${index + 1} · Col. ${px + 1}, Lig. ${py + 1}`;
   }
 
-  function handleClick(e) {
+  function handleTap(clientX, clientY) {
     const rect = container.getBoundingClientRect();
-    const cx = e.clientX - rect.left;
-    const cy = e.clientY - rect.top;
+    const cx = clientX - rect.left, cy = clientY - rect.top;
     const { px, py } = getPixelAt(cx, cy);
     if (px < 0 || px >= GRID_SIZE || py < 0 || py >= GRID_SIZE) return;
 
     if (scale < 3) {
-      // Auto-zoom puis ouvre le modal
       zoomTo(12, cx, cy, () => {
-        const newPx2 = Math.floor((cx - offsetX) / scale);
-        const newPy2 = Math.floor((cy - offsetY) / scale);
-        if (newPx2 >= 0 && newPx2 < GRID_SIZE && newPy2 >= 0 && newPy2 < GRID_SIZE) {
-          onPixelClick(newPy2 * GRID_SIZE + newPx2, newPx2, newPy2);
-        }
+        const nx = Math.floor((cx - offsetX) / scale);
+        const ny = Math.floor((cy - offsetY) / scale);
+        if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE)
+          onPixelClick(ny * GRID_SIZE + nx, nx, ny);
       });
       return;
     }
-
     onPixelClick(py * GRID_SIZE + px, px, py);
   }
+
+  // Touch
+  let lastTouchDist = 0;
+  let touchStartX, touchStartY, touchOffX, touchOffY;
+  let touchDragged = false;
+  let touchStartTime = 0;
+
+  container.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      lastTouchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      touchDragged = true;
+    } else if (e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchOffX = offsetX; touchOffY = offsetY;
+      touchDragged = false;
+      touchStartTime = Date.now();
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      touchDragged = true;
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const rect = container.getBoundingClientRect();
+      const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+      const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+      zoomTo(scale * (dist / lastTouchDist), mx, my);
+      lastTouchDist = dist;
+    } else if (e.touches.length === 1) {
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) touchDragged = true;
+      if (touchDragged) {
+        offsetX = touchOffX + dx;
+        offsetY = touchOffY + dy;
+        clampOffset(); applyTransform();
+      }
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (!touchDragged && e.changedTouches.length === 1) {
+      const elapsed = Date.now() - touchStartTime;
+      if (elapsed < 400) {
+        handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      }
+    }
+  }, { passive: false });
 
   // Pixel aléatoire
   document.getElementById('btn-random').addEventListener('click', () => {
@@ -469,56 +583,6 @@
     clampOffset(); applyTransform();
     onPixelClick(index, px, py);
   });
-
-  // Touch
-  let lastTouchDist = 0, touchStartX, touchStartY, touchOffX, touchOffY, touchDragged = false;
-
-  container.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 2) {
-      lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      touchDragged = false;
-    } else {
-      touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
-      touchOffX = offsetX; touchOffY = offsetY; touchDragged = false;
-    }
-  }, { passive: true });
-
-  container.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if (e.touches.length === 2) {
-      touchDragged = true;
-      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      const rect = container.getBoundingClientRect();
-      zoomTo(scale * (dist / lastTouchDist),
-        (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left,
-        (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top);
-      lastTouchDist = dist;
-    } else {
-      const dx = e.touches[0].clientX - touchStartX, dy = e.touches[0].clientY - touchStartY;
-      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) touchDragged = true;
-      offsetX = touchOffX + dx; offsetY = touchOffY + dy; clampOffset(); applyTransform();
-    }
-  }, { passive: false });
-
-  container.addEventListener('touchend', (e) => {
-    if (!touchDragged && e.changedTouches.length === 1) {
-      const rect = container.getBoundingClientRect();
-      const cx = e.changedTouches[0].clientX - rect.left;
-      const cy = e.changedTouches[0].clientY - rect.top;
-      const { px, py } = getPixelAt(cx, cy);
-      if (px < 0 || px >= GRID_SIZE || py < 0 || py >= GRID_SIZE) return;
-      if (scale < 3) {
-        zoomTo(12, cx, cy, () => {
-          const nx = Math.floor((cx - offsetX) / scale);
-          const ny = Math.floor((cy - offsetY) / scale);
-          if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE)
-            onPixelClick(ny * GRID_SIZE + nx, nx, ny);
-        });
-        return;
-      }
-      onPixelClick(py * GRID_SIZE + px, px, py);
-    }
-  }, { passive: true });
 
   function applyPixelToCanvas(pixel) {
     const x = pixel.id % GRID_SIZE, y = Math.floor(pixel.id / GRID_SIZE);
@@ -551,13 +615,13 @@
     if (count === 0) { bar.classList.remove('visible'); return; }
     bar.classList.add('visible');
     document.getElementById('sel-info').innerHTML =
-      `<span>${count}</span> pixel${count > 1 ? 's' : ''} sélectionné${count > 1 ? 's' : ''} · <span>${count}€</span>`;
+      `<span>${count}</span> pixel${count > 1 ? 's' : ''} · <span>${count}€</span>`;
   }
 
   document.getElementById('sel-clear').addEventListener('click', () => {
     selectedPixels.forEach(index => {
-      const x = index % GRID_SIZE, y = Math.floor(index / GRID_SIZE);
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(x, y, 1, 1);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(index % GRID_SIZE, Math.floor(index / GRID_SIZE), 1, 1);
     });
     selectedPixels.clear();
     updateSelectionBar(); drawOverlay();
@@ -588,6 +652,7 @@
     if (e.target === document.getElementById('modal-legal-overlay')) document.getElementById('modal-legal-overlay').classList.remove('open');
   });
 
+  // Swatches couleur
   const swatchContainer = document.getElementById('color-swatches');
   PRESET_COLORS.forEach(c => {
     const s = document.createElement('div');
@@ -637,7 +702,7 @@
     const pseudo = document.getElementById('pixel-pseudo').value.trim();
     if (!pseudo) { alert('Merci de saisir un pseudo !'); return; }
     const btn = document.getElementById('btn-acheter');
-    btn.disabled = true; btn.textContent = 'Redirection vers le paiement...';
+    btn.disabled = true; btn.textContent = 'Redirection...';
     const count = selectedPixels.size;
     const pendingList = [...selectedPixels].map(id => ({
       id, pseudo,
@@ -710,6 +775,13 @@
     if (toastTimeout) clearTimeout(toastTimeout);
     t.textContent = msg; t.classList.add('show');
     toastTimeout = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // Hint adaptatif desktop/mobile
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (!isMobile) {
+    document.getElementById('wall-hint').innerHTML =
+      '👆 <span>Clique n\'importe où</span> pour choisir ton pixel · Molette pour zoomer · <span>Plusieurs pixels possibles</span>';
   }
 
   loadPixels();
