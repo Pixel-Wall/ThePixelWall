@@ -10,7 +10,6 @@
   body { background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; }
 
   .hero { text-align: center; padding: 48px 20px 32px; }
-  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -1px; color: #f0c040; margin-bottom: 20px; }
   .hero .tagline { font-size: 1.1rem; color: #aaa; line-height: 1.8; margin-bottom: 6px; }
   .hero .tagline strong { color: #fff; font-weight: 600; }
   .hero .price-tag { display: inline-block; background: #1a1a1a; border: 1px solid #333; border-radius: 999px; padding: 8px 24px; font-size: 0.95rem; color: #fff; margin-top: 20px; }
@@ -33,16 +32,31 @@
   .stat .label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
   .wall-section { display: flex; justify-content: center; align-items: flex-start; gap: 32px; padding: 32px 20px; background: #0a0a0a; }
-  .citation-block { width: 200px; flex-shrink: 0; padding-top: 16px; }
+  .citation-block { width: 200px; flex-shrink: 0; padding-top: 60px; }
   .citation-block blockquote { border-left: 3px solid #f0c040; padding-left: 16px; color: #888; font-size: 0.95rem; line-height: 1.7; font-style: italic; }
   .citation-block blockquote strong { display: block; margin-top: 12px; color: #f0c040; font-style: normal; font-size: 0.8rem; letter-spacing: 1px; }
-  .wall-wrapper { overflow: auto; flex-shrink: 0; }
+  .wall-wrapper { flex-shrink: 0; }
 
-  #pixel-wall { display: grid; grid-template-columns: repeat(100, 8px); grid-template-rows: repeat(100, 8px); cursor: crosshair; border: 1px solid #ccc; width: 800px; height: 800px; }
-  .pixel { width: 8px; height: 8px; background: #ffffff; position: relative; overflow: hidden; }
-  .pixel:hover { outline: 1px solid #f0c040; z-index: 10; }
-  .pixel.sold { cursor: pointer; }
-  .pixel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .zoom-hint { text-align: center; color: #555; font-size: 0.78rem; margin-bottom: 8px; }
+  .zoom-controls { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px; }
+  .zoom-btn { background: #1a1a1a; border: 1px solid #333; color: #fff; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .zoom-btn:hover { background: #f0c040; color: #000; border-color: #f0c040; }
+  .zoom-label { color: #555; font-size: 0.8rem; min-width: 48px; text-align: center; }
+
+  #canvas-container { width: 800px; height: 800px; overflow: hidden; position: relative; border: 1px solid #2a2a2a; cursor: crosshair; user-select: none; -webkit-user-select: none; background: #f8f8f8; }
+  #pixel-canvas { position: absolute; top: 0; left: 0; image-rendering: pixelated; image-rendering: crisp-edges; }
+  #hover-indicator { position: absolute; pointer-events: none; border: 1px solid #f0c040; display: none; z-index: 10; box-sizing: border-box; }
+  .pixel-coords { text-align: center; color: #444; font-size: 0.75rem; margin-top: 8px; height: 16px; }
+
+  /* Sélection flottante */
+  .selection-bar { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: #141414; border: 1px solid #f0c040; border-radius: 16px; padding: 16px 24px; display: none; align-items: center; gap: 16px; z-index: 2000; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+  .selection-bar.visible { display: flex; }
+  .selection-bar .sel-info { font-size: 0.95rem; color: #fff; }
+  .selection-bar .sel-info span { color: #f0c040; font-weight: 700; }
+  .selection-bar .sel-clear { background: none; border: 1px solid #333; color: #888; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+  .selection-bar .sel-clear:hover { border-color: #fff; color: #fff; }
+  .selection-bar .sel-pay { background: #f0c040; color: #000; font-weight: 700; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-size: 0.95rem; }
+  .selection-bar .sel-pay:hover { background: #ffd050; }
 
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
@@ -80,12 +94,11 @@
   .btn-close { position: absolute; top: 16px; right: 16px; background: #1e1e1e; border: none; color: #888; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
   .btn-close:hover { color: #fff; }
 
-  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(120px); background: #f0c040; color: #000; font-weight: 700; padding: 12px 28px; border-radius: 999px; font-size: 0.95rem; z-index: 3000; transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275); pointer-events: none; white-space: nowrap; }
+  .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(120px); background: #f0c040; color: #000; font-weight: 700; padding: 12px 28px; border-radius: 999px; font-size: 0.95rem; z-index: 3000; transition: transform 0.3s cubic-bezier(.175,.885,.32,1.275); pointer-events: none; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
   .footer { text-align: center; padding: 32px 20px; color: #444; font-size: 0.8rem; border-top: 1px solid #1a1a1a; }
   .footer a { color: #f0c040; text-decoration: none; cursor: pointer; }
-  .footer a:hover { text-decoration: underline; }
 
   .modal-legal { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; width: 90%; max-width: 600px; position: relative; max-height: 85vh; overflow-y: auto; }
   .modal-legal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; color: #f0c040; }
@@ -95,15 +108,15 @@
   .modal-legal ul li { font-size: 0.85rem; color: #888; line-height: 1.7; }
 
   @media (max-width: 1100px) { .citation-block { display: none; } .citation-mobile { display: block; } .wall-section { padding: 24px 0; } }
-  @media (max-width: 860px) { #pixel-wall { grid-template-columns: repeat(100, 6px); grid-template-rows: repeat(100, 6px); width: 600px; height: 600px; } .pixel { width: 6px; height: 6px; } }
-  @media (max-width: 640px) { #pixel-wall { grid-template-columns: repeat(100, 4px); grid-template-rows: repeat(100, 4px); width: 400px; height: 400px; } .pixel { width: 4px; height: 4px; } .toast { font-size: 0.85rem; padding: 10px 20px; bottom: 20px; } }
-  @media (max-width: 420px) { #pixel-wall { grid-template-columns: repeat(100, 3.5px); grid-template-rows: repeat(100, 3.5px); width: 350px; height: 350px; } .pixel { width: 3.5px; height: 3.5px; } }
+  @media (max-width: 860px) { #canvas-container { width: 600px; height: 600px; } }
+  @media (max-width: 640px) { #canvas-container { width: 95vw; height: 95vw; } .selection-bar { width: 90%; flex-direction: column; text-align: center; } }
 </style>
 </head>
 <body>
 
 <div class="hero">
- <img src="logo.png" alt="The Pixel Wall" style="height: clamp(80px, 12vw, 160px); width: auto; margin-bottom: 20px; mix-blend-mode: screen;"> <p class="tagline">Un jour tu ne seras plus là.<br><strong>Ton message, lui, restera ici pour toujours.</strong></p>
+  <img src="logo.png" alt="The Pixel Wall" style="height: clamp(80px, 12vw, 160px); width: auto; margin-bottom: 20px; mix-blend-mode: screen;">
+  <p class="tagline">Un jour tu ne seras plus là.<br><strong>Ton message, lui, restera ici pour toujours.</strong></p>
   <p class="tagline" style="margin-top:8px;">Laisse une trace pour les générations<br>qui ne t'auront jamais connu.</p>
   <div class="price-tag">1 pixel = <span>1€</span> · Trace permanente sur internet</div>
 </div>
@@ -137,21 +150,37 @@
     </blockquote>
   </div>
   <div class="wall-wrapper">
-    <div id="pixel-wall"></div>
+    <div class="zoom-hint">🔍 Zoomez pour choisir vos pixels · Cliquez pour sélectionner · Plusieurs pixels possibles</div>
+    <div class="zoom-controls">
+      <button class="zoom-btn" id="btn-zoom-out">−</button>
+      <span class="zoom-label" id="zoom-level">80%</span>
+      <button class="zoom-btn" id="btn-zoom-in">+</button>
+      <button class="zoom-btn" id="btn-zoom-reset" style="width:auto;padding:0 12px;font-size:0.75rem;">↺ Reset</button>
+    </div>
+    <div id="canvas-container">
+      <canvas id="pixel-canvas"></canvas>
+      <div id="hover-indicator"></div>
+    </div>
+    <div class="pixel-coords" id="pixel-coords"></div>
   </div>
+</div>
+
+<!-- Barre de sélection flottante -->
+<div class="selection-bar" id="selection-bar">
+  <div class="sel-info" id="sel-info"><span>0</span> pixel sélectionné · <span>0€</span></div>
+  <button class="sel-clear" id="sel-clear">✕ Vider</button>
+  <button class="sel-pay" id="sel-pay">Payer →</button>
 </div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <button class="btn-close" id="btn-close">✕</button>
-    <h2>🎨 Personnalise ton pixel</h2>
+    <h2>🎨 Personnalise tes pixels</h2>
     <div class="pixel-info" id="modal-pixel-info">Pixel #0</div>
-
     <div class="tabs">
       <button class="tab-btn active" data-tab="couleur">🎨 Couleur</button>
       <button class="tab-btn" data-tab="image">🖼️ Image</button>
     </div>
-
     <div class="tab-content active" id="tab-couleur">
       <label>Choisis une couleur</label>
       <div class="color-row" id="color-swatches"></div>
@@ -160,7 +189,6 @@
         <span style="color:#666;font-size:0.85rem">Couleur personnalisée</span>
       </div>
     </div>
-
     <div class="tab-content" id="tab-image">
       <label>Upload une image</label>
       <div class="upload-zone" id="upload-zone">
@@ -173,19 +201,13 @@
         <p>Image sélectionnée ✅</p>
       </div>
     </div>
-
     <label>Ton pseudo (obligatoire)</label>
     <input type="text" id="pixel-pseudo" maxlength="30" placeholder="Ex: Marie75 🌟">
-
     <label>Ton message (optionnel)</label>
     <input type="text" id="pixel-message" maxlength="60" placeholder="Ex: J'étais là ✨">
-
     <label>Lien URL (optionnel)</label>
     <input type="text" id="pixel-url" placeholder="https://tonsite.com">
-
-    <button class="btn-primary" id="btn-acheter">
-      Payer 1€ et laisser ma trace →
-    </button>
+    <button class="btn-primary" id="btn-acheter">Payer →</button>
   </div>
 </div>
 
@@ -217,7 +239,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast">⏳ Redirection vers le paiement...</div>
+<div class="toast" id="toast"></div>
 
 <div class="footer">
   Chaque pixel est unique · La trace est permanente · 1€ = 1 pixel pour toujours<br><br>
@@ -232,80 +254,255 @@
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const GRID_COLS = 100;
-  const GRID_ROWS = 100;
-  const TOTAL_PIXELS = GRID_COLS * GRID_ROWS;
+  const GRID_SIZE = 1000;
+  const TOTAL_PIXELS = GRID_SIZE * GRID_SIZE;
   const PRESET_COLORS = ['#f0c040','#ff4d4d','#ff8c00','#4caf50','#2196f3','#9c27b0','#e91e63','#00bcd4','#fff','#888','#333','#000'];
 
   let pixelData = {};
-  let selectedPixelIndex = null;
+  let selectedPixels = new Set();
   let selectedColor = PRESET_COLORS[0];
   let selectedImageData = null;
   let activeTab = 'couleur';
-  let pendingPixel = null;
 
-  const wall = document.getElementById('pixel-wall');
-  for (let i = 0; i < TOTAL_PIXELS; i++) {
-    const px = document.createElement('div');
-    px.className = 'pixel';
-    px.dataset.index = i;
-    px.addEventListener('click', () => onPixelClick(i, px));
-    wall.appendChild(px);
+  const container = document.getElementById('canvas-container');
+  const canvas = document.getElementById('pixel-canvas');
+  const ctx = canvas.getContext('2d');
+  const hoverIndicator = document.getElementById('hover-indicator');
+
+  canvas.width = GRID_SIZE;
+  canvas.height = GRID_SIZE;
+  ctx.fillStyle = '#f8f8f8';
+  ctx.fillRect(0, 0, GRID_SIZE, GRID_SIZE);
+
+  let scale = 0.8, offsetX = 0, offsetY = 0;
+
+  function getContainerSize() { return { w: container.offsetWidth, h: container.offsetHeight }; }
+
+  function applyTransform() {
+    const dW = GRID_SIZE * scale, dH = GRID_SIZE * scale;
+    canvas.style.width = dW + 'px'; canvas.style.height = dH + 'px';
+    canvas.style.left = offsetX + 'px'; canvas.style.top = offsetY + 'px';
+    document.getElementById('zoom-level').textContent = Math.round(scale * 100) + '%';
   }
 
-  function applyPixelToDOM(pixel) {
-    const px = wall.children[pixel.id];
-    if (!px) return;
-    if (pixel.image) {
-      px.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = pixel.image;
-      px.appendChild(img);
+  function clampOffset() {
+    const { w, h } = getContainerSize();
+    const dW = GRID_SIZE * scale, dH = GRID_SIZE * scale;
+    offsetX = dW <= w ? (w - dW) / 2 : Math.min(0, Math.max(w - dW, offsetX));
+    offsetY = dH <= h ? (h - dH) / 2 : Math.min(0, Math.max(h - dH, offsetY));
+  }
+
+  function zoomTo(newScale, cx, cy) {
+    const { w, h } = getContainerSize();
+    cx = cx !== undefined ? cx : w / 2;
+    cy = cy !== undefined ? cy : h / 2;
+    const old = scale;
+    scale = Math.min(25, Math.max(0.5, newScale));
+    offsetX = cx - (cx - offsetX) * (scale / old);
+    offsetY = cy - (cy - offsetY) * (scale / old);
+    clampOffset(); applyTransform();
+  }
+
+  clampOffset(); applyTransform();
+
+  document.getElementById('btn-zoom-in').addEventListener('click', () => zoomTo(scale * 1.5));
+  document.getElementById('btn-zoom-out').addEventListener('click', () => zoomTo(scale * 0.67));
+  document.getElementById('btn-zoom-reset').addEventListener('click', () => {
+    scale = 0.8; offsetX = 0; offsetY = 0; clampOffset(); applyTransform();
+    hoverIndicator.style.display = 'none';
+  });
+
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = container.getBoundingClientRect();
+    zoomTo(scale * (e.deltaY < 0 ? 1.2 : 0.85), e.clientX - rect.left, e.clientY - rect.top);
+  }, { passive: false });
+
+  let isDragging = false, didDrag = false, dragStartX, dragStartY, dragOffsetX, dragOffsetY;
+
+  container.addEventListener('mousedown', (e) => {
+    isDragging = true; didDrag = false;
+    dragStartX = e.clientX; dragStartY = e.clientY;
+    dragOffsetX = offsetX; dragOffsetY = offsetY;
+    container.style.cursor = 'grabbing';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      const dx = e.clientX - dragStartX, dy = e.clientY - dragStartY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) didDrag = true;
+      if (didDrag) { offsetX = dragOffsetX + dx; offsetY = dragOffsetY + dy; clampOffset(); applyTransform(); }
     } else {
-      px.style.background = pixel.color || '#fff';
+      const rect = container.getBoundingClientRect();
+      updateHover(e.clientX - rect.left, e.clientY - rect.top);
     }
-    px.classList.add('sold');
-    if (pixel.message) px.title = pixel.pseudo + ' : ' + pixel.message;
+  });
+
+  document.addEventListener('mouseup', (e) => {
+    if (isDragging && !didDrag) handleClick(e);
+    isDragging = false; container.style.cursor = 'crosshair';
+  });
+
+  container.addEventListener('mouseleave', () => {
+    hoverIndicator.style.display = 'none';
+    document.getElementById('pixel-coords').textContent = '';
+  });
+
+  function getPixelAt(cx, cy) {
+    return { px: Math.floor((cx - offsetX) / scale), py: Math.floor((cy - offsetY) / scale) };
   }
 
-  async function loadPixels() {
-    const { data, error } = await db.from('pixels').select('*');
-    if (error) { console.error('Erreur:', error); return; }
-    data.forEach(pixel => { pixelData[pixel.id] = pixel; applyPixelToDOM(pixel); });
-    updateStats();
-    updateTicker();
-
-    // Vérifier si retour de paiement Stripe
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('payment') === 'success' && localStorage.getItem('pendingPixel')) {
-      const pending = JSON.parse(localStorage.getItem('pendingPixel'));
-      await savePendingPixel(pending);
-      localStorage.removeItem('pendingPixel');
-      history.replaceState({}, '', window.location.pathname);
-    }
+  function updateHover(cx, cy) {
+    if (scale < 2) { hoverIndicator.style.display = 'none'; return; }
+    const { px, py } = getPixelAt(cx, cy);
+    if (px < 0 || px >= GRID_SIZE || py < 0 || py >= GRID_SIZE) { hoverIndicator.style.display = 'none'; return; }
+    const index = py * GRID_SIZE + px;
+    const isSold = !!pixelData[index];
+    const isSelected = selectedPixels.has(index);
+    hoverIndicator.style.display = 'block';
+    hoverIndicator.style.left = (px * scale + offsetX) + 'px';
+    hoverIndicator.style.top = (py * scale + offsetY) + 'px';
+    hoverIndicator.style.width = Math.max(1, scale) + 'px';
+    hoverIndicator.style.height = Math.max(1, scale) + 'px';
+    hoverIndicator.style.borderColor = isSold ? '#ff4d4d' : isSelected ? '#fff' : '#f0c040';
+    document.getElementById('pixel-coords').textContent = isSold
+      ? `Pixel #${index + 1} — Déjà pris`
+      : isSelected
+      ? `Pixel #${index + 1} — Sélectionné ✓`
+      : `Pixel #${index + 1} · Col. ${px + 1}, Lig. ${py + 1}`;
   }
 
-  async function savePendingPixel(pending) {
-    if (pixelData[pending.id]) return;
-    const { error } = await db.from('pixels').insert(pending);
-    if (!error) {
-      pixelData[pending.id] = pending;
-      applyPixelToDOM(pending);
-      updateStats();
-      updateTicker();
-      showToast('✅ Ta trace est gravée pour toujours !');
-    }
+  function handleClick(e) {
+    const rect = container.getBoundingClientRect();
+    const { px, py } = getPixelAt(e.clientX - rect.left, e.clientY - rect.top);
+    if (px < 0 || px >= GRID_SIZE || py < 0 || py >= GRID_SIZE) return;
+    if (scale < 2) { showToast('🔍 Zoomez pour choisir vos pixels !'); return; }
+    onPixelClick(py * GRID_SIZE + px, px, py);
   }
 
-  db.channel('pixels-realtime')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pixels' }, payload => {
-      const pixel = payload.new;
-      pixelData[pixel.id] = pixel;
-      applyPixelToDOM(pixel);
-      updateStats();
-      updateTicker();
-    })
-    .subscribe();
+  let lastTouchDist = 0, touchStartX, touchStartY, touchOffX, touchOffY, touchDragged = false;
+
+  container.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      touchDragged = false;
+    } else {
+      touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+      touchOffX = offsetX; touchOffY = offsetY; touchDragged = false;
+    }
+  }, { passive: true });
+
+  container.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      touchDragged = true;
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const rect = container.getBoundingClientRect();
+      zoomTo(scale * (dist / lastTouchDist),
+        (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left,
+        (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top);
+      lastTouchDist = dist;
+    } else {
+      const dx = e.touches[0].clientX - touchStartX, dy = e.touches[0].clientY - touchStartY;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) touchDragged = true;
+      offsetX = touchOffX + dx; offsetY = touchOffY + dy; clampOffset(); applyTransform();
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchend', (e) => {
+    if (!touchDragged && e.changedTouches.length === 1) {
+      const rect = container.getBoundingClientRect();
+      const { px, py } = getPixelAt(e.changedTouches[0].clientX - rect.left, e.changedTouches[0].clientY - rect.top);
+      if (px >= 0 && px < GRID_SIZE && py >= 0 && py < GRID_SIZE) {
+        if (scale < 2) { showToast('🔍 Zoomez pour choisir vos pixels !'); return; }
+        onPixelClick(py * GRID_SIZE + px, px, py);
+      }
+    }
+  }, { passive: true });
+
+  function applyPixelToCanvas(pixel) {
+    const x = pixel.id % GRID_SIZE, y = Math.floor(pixel.id / GRID_SIZE);
+    ctx.fillStyle = pixel.color || '#f0c040';
+    ctx.fillRect(x, y, 1, 1);
+  }
+
+  function drawSelectedPixels() {
+    selectedPixels.forEach(index => {
+      const x = index % GRID_SIZE, y = Math.floor(index / GRID_SIZE);
+      ctx.fillStyle = '#f0c040';
+      ctx.fillRect(x, y, 1, 1);
+    });
+  }
+
+  function clearSelectedFromCanvas(index) {
+    const x = index % GRID_SIZE, y = Math.floor(index / GRID_SIZE);
+    ctx.fillStyle = '#f8f8f8';
+    ctx.fillRect(x, y, 1, 1);
+  }
+
+  function updateSelectionBar() {
+    const count = selectedPixels.size;
+    const bar = document.getElementById('selection-bar');
+    const info = document.getElementById('sel-info');
+    if (count === 0) { bar.classList.remove('visible'); return; }
+    bar.classList.add('visible');
+    info.innerHTML = `<span>${count}</span> pixel${count > 1 ? 's' : ''} sélectionné${count > 1 ? 's' : ''} · <span>${count}€</span>`;
+  }
+
+  function onPixelClick(index, px, py) {
+    if (pixelData[index]) {
+      if (pixelData[index].url) window.open(pixelData[index].url, '_blank');
+      else showToast(`${pixelData[index].pseudo}${pixelData[index].message ? ' : ' + pixelData[index].message : ''}`);
+      return;
+    }
+    if (selectedPixels.has(index)) {
+      selectedPixels.delete(index);
+      clearSelectedFromCanvas(index);
+    } else {
+      selectedPixels.add(index);
+      ctx.fillStyle = '#f0c040';
+      ctx.fillRect(px, py, 1, 1);
+    }
+    updateSelectionBar();
+  }
+
+  document.getElementById('sel-clear').addEventListener('click', () => {
+    selectedPixels.forEach(index => clearSelectedFromCanvas(index));
+    selectedPixels.clear();
+    updateSelectionBar();
+  });
+
+  document.getElementById('sel-pay').addEventListener('click', () => {
+    if (selectedPixels.size === 0) return;
+    selectedImageData = null;
+    document.getElementById('upload-preview').style.display = 'none';
+    document.getElementById('file-input').value = '';
+    const count = selectedPixels.size;
+    document.getElementById('modal-pixel-info').textContent =
+      count === 1
+        ? `Pixel #${[...selectedPixels][0] + 1}`
+        : `${count} pixels sélectionnés`;
+    document.getElementById('pixel-pseudo').value = '';
+    document.getElementById('pixel-message').value = '';
+    document.getElementById('pixel-url').value = '';
+    document.getElementById('btn-acheter').textContent = `Payer ${count}€ et laisser ma trace →`;
+    document.getElementById('modal-overlay').classList.add('open');
+  });
+
+  document.getElementById('btn-close').addEventListener('click', () => {
+    document.getElementById('modal-overlay').classList.remove('open');
+  });
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay'))
+      document.getElementById('modal-overlay').classList.remove('open');
+  });
+
+  document.getElementById('link-legal').addEventListener('click', () => document.getElementById('modal-legal-overlay').classList.add('open'));
+  document.getElementById('btn-close-legal').addEventListener('click', () => document.getElementById('modal-legal-overlay').classList.remove('open'));
+  document.getElementById('modal-legal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-legal-overlay'))
+      document.getElementById('modal-legal-overlay').classList.remove('open');
+  });
 
   const swatchContainer = document.getElementById('color-swatches');
   PRESET_COLORS.forEach(c => {
@@ -337,126 +534,97 @@
     });
   });
 
-  const uploadZone = document.getElementById('upload-zone');
-  const fileInput = document.getElementById('file-input');
-  const uploadPreview = document.getElementById('upload-preview');
-  const previewImg = document.getElementById('preview-img');
-
-  uploadZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', e => {
+  document.getElementById('upload-zone').addEventListener('click', () => document.getElementById('file-input').click());
+  document.getElementById('file-input').addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { alert('Image trop lourde. Maximum 2Mo.'); return; }
     const reader = new FileReader();
     reader.onload = ev => {
       selectedImageData = ev.target.result;
-      previewImg.src = selectedImageData;
-      uploadPreview.style.display = 'block';
+      document.getElementById('preview-img').src = selectedImageData;
+      document.getElementById('upload-preview').style.display = 'block';
     };
     reader.readAsDataURL(file);
   });
 
-  function onPixelClick(index, el) {
-    if (pixelData[index]) {
-      if (pixelData[index].url) window.open(pixelData[index].url, '_blank');
-      return;
-    }
-    const col = (index % GRID_COLS) + 1;
-    const row = Math.floor(index / GRID_COLS) + 1;
-    selectedPixelIndex = index;
-    selectedImageData = null;
-    uploadPreview.style.display = 'none';
-    fileInput.value = '';
-    document.getElementById('modal-pixel-info').textContent = `Pixel #${index + 1} · Ligne ${row}, Colonne ${col}`;
-    document.getElementById('pixel-pseudo').value = '';
-    document.getElementById('pixel-message').value = '';
-    document.getElementById('pixel-url').value = '';
-    document.getElementById('modal-overlay').classList.add('open');
-  }
-
-  document.getElementById('btn-close').addEventListener('click', closeModal);
-  document.getElementById('modal-overlay').addEventListener('click', e => {
-    if (e.target === document.getElementById('modal-overlay')) closeModal();
-  });
-  function closeModal() {
-    document.getElementById('modal-overlay').classList.remove('open');
-    selectedPixelIndex = null;
-  }
-
-  document.getElementById('link-legal').addEventListener('click', () => {
-    document.getElementById('modal-legal-overlay').classList.add('open');
-  });
-  document.getElementById('btn-close-legal').addEventListener('click', () => {
-    document.getElementById('modal-legal-overlay').classList.remove('open');
-  });
-  document.getElementById('modal-legal-overlay').addEventListener('click', e => {
-    if (e.target === document.getElementById('modal-legal-overlay'))
-      document.getElementById('modal-legal-overlay').classList.remove('open');
-  });
-
   document.getElementById('btn-acheter').addEventListener('click', async () => {
-    if (selectedPixelIndex === null) return;
+    if (selectedPixels.size === 0) return;
     const pseudo = document.getElementById('pixel-pseudo').value.trim();
     if (!pseudo) { alert('Merci de saisir un pseudo !'); return; }
-
-    const message = document.getElementById('pixel-message').value.trim();
-    const url = document.getElementById('pixel-url').value.trim();
     const btn = document.getElementById('btn-acheter');
-
-    btn.disabled = true;
-    btn.textContent = 'Redirection vers le paiement...';
-
-    const payload = {
-      id: selectedPixelIndex,
+    btn.disabled = true; btn.textContent = 'Redirection vers le paiement...';
+    const count = selectedPixels.size;
+    const pendingList = [...selectedPixels].map(id => ({
+      id,
       pseudo,
-      message: message || null,
-      url: url || null,
+      message: document.getElementById('pixel-message').value.trim() || null,
+      url: document.getElementById('pixel-url').value.trim() || null,
       color: activeTab === 'image' ? null : selectedColor,
       image: activeTab === 'image' && selectedImageData ? selectedImageData : null
-    };
-
-    // Sauvegarde locale avant redirection Stripe
-    localStorage.setItem('pendingPixel', JSON.stringify(payload));
-
+    }));
+    localStorage.setItem('pendingPixels', JSON.stringify(pendingList));
     showToast('⏳ Redirection vers le paiement...');
-
-    // Redirection vers Stripe avec URL de retour
     const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname + '?payment=success');
     setTimeout(() => {
-      window.location.href = STRIPE_PAYMENT_LINK + '?success_url=' + returnUrl;
+      window.location.href = STRIPE_PAYMENT_LINK + '?prefilled_quantity=' + count + '&success_url=' + returnUrl;
     }, 800);
   });
 
+  async function loadPixels() {
+    const { data, error } = await db.from('pixels').select('*');
+    if (error) { console.error(error); return; }
+    data.forEach(p => { pixelData[p.id] = p; applyPixelToCanvas(p); });
+    updateStats(); updateTicker();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success' && localStorage.getItem('pendingPixels')) {
+      const list = JSON.parse(localStorage.getItem('pendingPixels'));
+      for (const pending of list) await savePendingPixel(pending);
+      localStorage.removeItem('pendingPixels');
+      history.replaceState({}, '', window.location.pathname);
+      showToast('✅ Ta trace est gravée pour toujours !');
+    }
+  }
+
+  async function savePendingPixel(pending) {
+    if (pixelData[pending.id]) return;
+    const { error } = await db.from('pixels').insert(pending);
+    if (!error) { pixelData[pending.id] = pending; applyPixelToCanvas(pending); updateStats(); updateTicker(); }
+  }
+
+  db.channel('pixels-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pixels' }, payload => {
+      pixelData[payload.new.id] = payload.new;
+      applyPixelToCanvas(payload.new);
+      updateStats(); updateTicker();
+    }).subscribe();
+
   function updateStats() {
     const sold = Object.keys(pixelData).length;
-    const percent = ((sold / TOTAL_PIXELS) * 100).toFixed(3);
-    const statSold = document.getElementById('stat-sold');
-    const statLabel = document.getElementById('stat-label');
+    const percent = ((sold / TOTAL_PIXELS) * 100).toFixed(4);
     if (sold === 0) {
-      statSold.textContent = '—';
-      statLabel.textContent = 'Sois le premier à laisser ta trace';
+      document.getElementById('stat-sold').textContent = '—';
+      document.getElementById('stat-label').textContent = 'Sois le premier à laisser ta trace';
     } else {
-      statSold.textContent = sold.toLocaleString('fr-FR');
-      statLabel.textContent = sold === 1 ? 'trace laissée' : 'traces laissées';
+      document.getElementById('stat-sold').textContent = sold.toLocaleString('fr-FR');
+      document.getElementById('stat-label').textContent = sold === 1 ? 'trace laissée' : 'traces laissées';
     }
     document.getElementById('stat-percent').textContent = percent + '%';
   }
 
   function updateTicker() {
     const pseudos = Object.values(pixelData).filter(p => p.pseudo).map(p => p.pseudo);
-    if (pseudos.length === 0) { document.getElementById('ticker-wrap').classList.remove('visible'); return; }
+    if (!pseudos.length) { document.getElementById('ticker-wrap').classList.remove('visible'); return; }
     document.getElementById('ticker-wrap').classList.add('visible');
-    const ticker = document.getElementById('ticker');
-    const allItems = [...pseudos, ...pseudos];
-    ticker.innerHTML = allItems.map(p => `<span class="ticker-item">✦ <span>${p}</span> a laissé sa trace</span>`).join('');
+    const all = [...pseudos, ...pseudos];
+    document.getElementById('ticker').innerHTML = all.map(p => `<span class="ticker-item">✦ <span>${p}</span> a laissé sa trace</span>`).join('');
   }
 
   let toastTimeout = null;
   function showToast(msg) {
     const t = document.getElementById('toast');
     if (toastTimeout) clearTimeout(toastTimeout);
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     toastTimeout = setTimeout(() => t.classList.remove('show'), 3000);
   }
 
